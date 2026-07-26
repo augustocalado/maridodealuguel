@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const service = document.getElementById('modalService').value;
       const details = document.getElementById('modalDetails').value;
 
-      const whatsappNumber = '5511999999999'; // número comercial Guarulhos
+      const whatsappNumber = '5511917256460'; // número comercial Guarulhos
 
       let message = `*SOLICITAÇÃO DE ORÇAMENTO - MARIDO DE ALUGUEL GUARULHOS*\n\n`;
       message += `*Nome:* ${name}\n`;
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
   directWhatsappBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      const whatsappNumber = '5511999999999';
+      const whatsappNumber = '5511917256460';
       const defaultMsg = encodeURIComponent('Olá! Encontrei seu site no Google e gostaria de solicitar um orçamento para atendimento em Guarulhos.');
       window.open(`https://wa.me/${whatsappNumber}?text=${defaultMsg}`, '_blank');
     });
