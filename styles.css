@@ -590,24 +590,49 @@ button {
   flex-grow: 1;
 }
 
+.service-card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  width: 100%;
+}
+
 .service-btn {
   width: 100%;
-  padding: 0.8rem;
-  background-color: var(--gray-100);
-  color: var(--primary);
+  padding: 0.75rem 0.5rem;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   border-radius: var(--radius-sm);
   transition: var(--transition);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  text-align: center;
 }
 
-.service-card:hover .service-btn {
-  background-color: var(--accent);
+.btn-page-link {
+  background-color: var(--gray-100);
+  color: var(--primary);
+  border: 1px solid var(--gray-300);
+}
+
+.btn-page-link:hover {
+  background-color: var(--primary);
   color: var(--white);
+  border-color: var(--primary);
+}
+
+.btn-zap-action {
+  background-color: #25D366;
+  color: var(--white);
+  border: 1px solid #25D366;
+}
+
+.btn-zap-action:hover {
+  background-color: #1EBE5D;
+  border-color: #1EBE5D;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
 }
 
 /* Why Choose Us Section */
@@ -1478,3 +1503,199 @@ button {
     height: 280px;
   }
 }
+
+/* ==========================================================================
+   BRANDS CAROUSEL STYLES
+   ========================================================================== */
+.brands-section {
+  padding: 3.5rem 0;
+  background-color: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  overflow: hidden;
+}
+
+.brands-carousel-wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 1rem 0;
+}
+
+.brands-carousel-wrapper::before,
+.brands-carousel-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.brands-carousel-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, var(--white) 0%, transparent 100%);
+}
+
+.brands-carousel-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, var(--white) 0%, transparent 100%);
+}
+
+.brands-carousel-track {
+  display: flex;
+  width: calc(280px * 8);
+  animation: scrollBrands 22s linear infinite;
+}
+
+.brands-carousel-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scrollBrands {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-280px * 4));
+  }
+}
+
+.brand-item {
+  width: 280px;
+  padding: 0 1rem;
+  flex-shrink: 0;
+}
+
+.brand-card {
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+  background: var(--white);
+}
+
+.brand-logo-text {
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+}
+
+.brand-logo-text.marisa {
+  color: #EC008C; /* Marisa Rosa */
+  font-family: sans-serif;
+}
+
+.brand-logo-text.caedu {
+  color: #E30613; /* Caedu Vermelho */
+  font-style: italic;
+}
+
+.brand-logo-text.cea {
+  color: #000000; /* C&A */
+  letter-spacing: 2px;
+}
+
+.brand-logo-text.localiza {
+  color: #008037; /* Localiza Verde */
+  font-style: italic;
+}
+
+/* ==========================================================================
+   CONDOMINIUMS SECTION STYLES
+   ========================================================================== */
+.condos-section {
+  padding: 5rem 0;
+  background-color: var(--gray-100);
+}
+
+.condos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.condo-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 2.25rem 1.75rem;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.condo-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-light);
+}
+
+.condo-badge {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--green);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+.condo-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: var(--accent);
+  font-size: 1.6rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.condo-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.condo-location {
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.condo-desc {
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.condo-card .btn {
+  width: 100%;
+}
+

@@ -1,4 +1,6 @@
+# Robots.txt para Marido de Aluguel em Guarulhos
 User-agent: *
 Allow: /
 
+# Sitemap oficial para indexação no Google Search Console e Bing Webmaster
 Sitemap: https://maridodealuguelguarulhos.com.br/sitemap.xml
