@@ -287,4 +287,130 @@ document.addEventListener('DOMContentLoaded', () => {
     el.style.transition = 'all 0.5s ease-out';
     observer.observe(el);
   });
+
+  // 8. Chat de Atendimento Online (WhatsApp)
+  const chatWidgetHTML = `
+    <div class="chat-widget" id="chatWidget">
+      <div class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-avatar"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <div class="chat-header-info">
+            <strong>Marido de Aluguel Guarulhos</strong>
+            <span class="chat-status"><span class="chat-status-dot"></span> Online agora</span>
+          </div>
+          <button class="chat-close-btn" id="chatCloseBtn" aria-label="Fechar chat">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="chat-body" id="chatBody">
+          <div class="chat-msg bot">
+            Olá! Sou o atendente virtual do Marido de Aluguel em Guarulhos.
+            Preciso de um reparo ou montagem de móveis? Me conte o que aconteceu e em qual bairro você está que te ajudo rapidinho.
+            <span class="msg-time">08:00</span>
+          </div>
+          <div class="chat-msg user" style="display:none;" id="chatUserMsg"></div>
+        </div>
+        <div class="chat-quick" id="chatQuick">
+          <button class="chat-chip" data-msg="Preciso de um reparo geral em casa em Guarulhos.">
+            <i class="fa-solid fa-screwdriver-wrench"></i> Reparo geral
+          </button>
+          <button class="chat-chip" data-msg="Preciso de um eletricista em Guarulhos.">
+            <i class="fa-solid fa-bolt"></i> Reparo elétrico
+          </button>
+          <button class="chat-chip" data-msg="Preciso de um encanador em Guarulhos.">
+            <i class="fa-solid fa-droplet"></i> Reparo hidráulico
+          </button>
+          <button class="chat-chip" data-msg="Preciso de montagem de móveis em Guarulhos.">
+            <i class="fa-solid fa-couch"></i> Montagem de móveis
+          </button>
+        </div>
+        <div class="chat-footer">
+          <input type="text" id="chatInput" class="chat-input" placeholder="Digite sua mensagem..." aria-label="Digite sua mensagem">
+          <button class="chat-send" id="chatSendBtn" aria-label="Enviar mensagem">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+      <button class="chat-launcher" id="chatLauncher" aria-label="Abrir chat de atendimento">
+        <i class="fa-solid fa-comment-dots launcher-open-icon"></i>
+        <i class="fa-solid fa-xmark launcher-close-icon"></i>
+        <span class="chat-launcher-badge">1</span>
+      </button>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', chatWidgetHTML);
+
+  const chatWidget = document.getElementById('chatWidget');
+  const chatLauncher = document.getElementById('chatLauncher');
+  const chatCloseBtn = document.getElementById('chatCloseBtn');
+  const chatInput = document.getElementById('chatInput');
+  const chatSendBtn = document.getElementById('chatSendBtn');
+  const chatBody = document.getElementById('chatBody');
+  const chatUserMsg = document.getElementById('chatUserMsg');
+  const chatQuick = document.getElementById('chatQuick');
+
+  const whatsappChatNumber = '5511917256460';
+
+  function sendChatToWhatsApp(message) {
+    const fullMsg = `Olá! Falei com o atendente virtual do site.\n\n*Mensagem:* ${message}\n\nPor favor, me passe um orçamento.`;
+    const url = `https://wa.me/${whatsappChatNumber}?text=${encodeURIComponent(fullMsg)}`;
+    window.open(url, '_blank');
+  }
+
+  function showUserMessage(message) {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    chatUserMsg.textContent = message;
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'msg-time';
+    timeSpan.textContent = `${hours}:${minutes}`;
+    chatUserMsg.appendChild(timeSpan);
+    chatUserMsg.style.display = 'block';
+    chatQuick.style.display = 'none';
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  if (chatLauncher) {
+    chatLauncher.addEventListener('click', () => {
+      chatWidget.classList.toggle('open');
+    });
+  }
+
+  if (chatCloseBtn) {
+    chatCloseBtn.addEventListener('click', () => {
+      chatWidget.classList.remove('open');
+    });
+  }
+
+  const handleChatMessage = (message) => {
+    const text = (message || '').trim();
+    if (!text) return;
+    showUserMessage(text);
+    setTimeout(() => sendChatToWhatsApp(text), 600);
+  };
+
+  document.querySelectorAll('.chat-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      handleChatMessage(chip.getAttribute('data-msg'));
+    });
+  });
+
+  if (chatSendBtn) {
+    chatSendBtn.addEventListener('click', () => {
+      handleChatMessage(chatInput.value);
+      chatInput.value = '';
+    });
+  }
+
+  if (chatInput) {
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleChatMessage(chatInput.value);
+        chatInput.value = '';
+      }
+    });
+  }
 });

@@ -1699,3 +1699,455 @@ button {
   width: 100%;
 }
 
+/* ==========================================================================
+   COMMERCIAL SECTION (Lojas de Rua e Shoppings)
+   ========================================================================== */
+.commercial-section {
+  padding: 6rem 0;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+
+.commercial-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+.commercial-section .container {
+  position: relative;
+  z-index: 1;
+}
+
+.commercial-section .section-title {
+  color: var(--white);
+}
+
+.commercial-section .section-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.commercial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.commercial-card {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-md);
+  padding: 2.25rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
+  backdrop-filter: blur(4px);
+}
+
+.commercial-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-6px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-lg);
+}
+
+.commercial-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--accent);
+  color: var(--primary-dark);
+  font-size: 1.6rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.commercial-card h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 0.75rem;
+}
+
+.commercial-card p {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.commercial-list {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.commercial-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.commercial-list li i {
+  color: var(--accent);
+  margin-top: 2px;
+}
+
+.commercial-card .btn {
+  width: 100%;
+}
+
+.commercial-card .btn-outline-light {
+  background: transparent;
+  border: 2px solid var(--white);
+  color: var(--white);
+}
+
+.commercial-card .btn-outline-light:hover {
+  background: var(--white);
+  color: var(--primary);
+}
+
+.commercial-note {
+  margin-top: 3rem;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.commercial-note i {
+  color: var(--accent);
+  margin-right: 0.5rem;
+}
+
+/* ==========================================================================
+   CHAT DE ATENDIMENTO ONLINE (WHATSAPP)
+   ========================================================================== */
+
+.chat-widget {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1500;
+  font-family: var(--font-main);
+}
+
+.chat-widget * {
+  box-sizing: border-box;
+}
+
+/* Launcher (botão flutuante) */
+.chat-launcher {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: var(--white);
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(37, 211, 102, 0.5);
+  transition: var(--transition);
+  position: relative;
+}
+
+.chat-launcher:hover {
+  transform: scale(1.1);
+}
+
+.chat-launcher .launcher-close-icon {
+  display: none;
+}
+
+.chat-widget.open .chat-launcher .launcher-open-icon {
+  display: none;
+}
+
+.chat-widget.open .chat-launcher .launcher-close-icon {
+  display: block;
+}
+
+.chat-launcher-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 20px;
+  height: 20px;
+  background-color: var(--accent);
+  color: var(--white);
+  border: 2px solid var(--white);
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: chatBadgePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes chatBadgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+}
+
+.chat-widget .chat-panel {
+  display: none;
+}
+
+.chat-widget.open .chat-panel {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  width: 360px;
+  max-width: calc(100vw - 40px);
+  height: 500px;
+  max-height: calc(100vh - 140px);
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: chatSlideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes chatSlideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Header do chat */
+.chat-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: var(--white);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.chat-avatar {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+
+.chat-header-info {
+  flex-grow: 1;
+}
+
+.chat-header-info strong {
+  font-size: 1rem;
+  font-weight: 800;
+  display: block;
+  line-height: 1.3;
+}
+
+.chat-status {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.85);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.chat-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.35);
+}
+
+.chat-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-size: 1.3rem;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.chat-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Corpo / mensagens */
+.chat-body {
+  flex-grow: 1;
+  padding: 1.1rem;
+  overflow-y: auto;
+  background: var(--gray-100);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.chat-msg {
+  max-width: 85%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  animation: chatFadeIn 0.3s ease;
+}
+
+@keyframes chatFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-msg.bot {
+  background: var(--white);
+  color: var(--dark);
+  border: 1px solid var(--gray-200);
+  border-bottom-left-radius: 4px;
+  align-self: flex-start;
+}
+
+.chat-msg.user {
+  background: var(--primary);
+  color: var(--white);
+  border-bottom-right-radius: 4px;
+  align-self: flex-end;
+}
+
+.chat-msg .msg-time {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.68rem;
+  opacity: 0.7;
+}
+
+/* Chips de respostas rápidas */
+.chat-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0 1.1rem 0.6rem;
+  background: var(--gray-100);
+}
+
+.chat-chip {
+  background: var(--accent-light);
+  border: 1.5px solid var(--accent);
+  color: var(--accent-hover);
+  font-family: var(--font-main);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: var(--transition);
+}
+
+.chat-chip:hover {
+  background: var(--accent);
+  color: var(--white);
+}
+
+/* Rodapé do chat */
+.chat-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.1rem;
+  border-top: 1px solid var(--gray-200);
+  background: var(--white);
+}
+
+.chat-input {
+  flex-grow: 1;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  padding: 0.65rem 1rem;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  color: var(--dark);
+  outline: none;
+  transition: var(--transition);
+}
+
+.chat-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(11, 61, 145, 0.12);
+}
+
+.chat-send {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.chat-send:hover {
+  background: var(--primary-dark);
+}
+
+/* Sobreposição com o botão verde de WhatsApp na home */
+.whatsapp-widget ~ .chat-widget {
+  bottom: 112px;
+}
+
+@media (max-width: 768px) {
+  .chat-widget {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .chat-widget.open .chat-panel {
+    bottom: 72px;
+    right: 0;
+    width: calc(100vw - 32px);
+    max-width: 360px;
+    height: 70vh;
+  }
+
+  .whatsapp-widget ~ .chat-widget {
+    bottom: 100px;
+  }
+}
+
