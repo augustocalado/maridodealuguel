@@ -1,4 +1,4 @@
-/* ==========================================================================
+﻿/* ==========================================================================
    MARIDO DE ALUGUEL EM GUARULHOS - JAVASCRIPT LOGIC
    ========================================================================== */
 
@@ -116,15 +116,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const service = document.getElementById('modalService').value;
       const details = document.getElementById('modalDetails').value;
 
-      const whatsappNumber = '5511917256460'; // número comercial Guarulhos
+      const whatsappNumber = '5511980604534'; // nÃºmero comercial Guarulhos
 
-      let message = `*SOLICITAÇÃO DE ORÇAMENTO - MARIDO DE ALUGUEL GUARULHOS*\n\n`;
+      let message = `*SOLICITAÃ‡ÃƒO DE ORÃ‡AMENTO - MARIDO DE ALUGUEL GUARULHOS*\n\n`;
       message += `*Nome:* ${name}\n`;
       if (phone) message += `*Telefone:* ${phone}\n`;
       message += `*Bairro em Guarulhos:* ${neighborhood}\n`;
-      message += `*Serviço Desejado:* ${service}\n`;
-      if (details) message += `*Observações:* ${details}\n\n`;
-      message += `Olá! Gostaria de receber um orçamento rápido para este serviço.`;
+      message += `*ServiÃ§o Desejado:* ${service}\n`;
+      if (details) message += `*ObservaÃ§Ãµes:* ${details}\n\n`;
+      message += `OlÃ¡! Gostaria de receber um orÃ§amento rÃ¡pido para este serviÃ§o.`;
 
       const encodedMessage = encodeURIComponent(message);
       const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
@@ -143,82 +143,82 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const blogArticlesData = {
     '1': {
-      title: 'Como Instalar um Ventilador de Teto com Segurança em Guarulhos',
-      category: 'Elétrica & Conforto',
+      title: 'Como Instalar um Ventilador de Teto com SeguranÃ§a em Guarulhos',
+      category: 'ElÃ©trica & Conforto',
       date: '18 de Julho, 2026',
       content: `
-        <p>A instalação de um ventilador de teto exige atenção especial à fiação elétrica e à fixação no teto ou laje, garantindo que o aparelho funcione sem ruídos ou riscos de queda.</p>
+        <p>A instalaÃ§Ã£o de um ventilador de teto exige atenÃ§Ã£o especial Ã  fiaÃ§Ã£o elÃ©trica e Ã  fixaÃ§Ã£o no teto ou laje, garantindo que o aparelho funcione sem ruÃ­dos ou riscos de queda.</p>
         <h4>1. Verifique a Estrutura do Teto</h4>
-        <p>O ventilador deve ser fixado em uma caixa de luz reforçada de metal ou diretamente no concreto da laje. Tetos de gesso rebaixado exigem suporte prolongado ancorado no teto estrutural.</p>
-        <h4>2. Cheque a Voltagem e a Fiação</h4>
-        <p>Em Guarulhos, a voltagem padrão é 110V/127V na maioria das residências, mas há instalações em 220V. É essencial identificar a fase, o neutro e o fio terra, além de passar a fiação do interruptor para controle de velocidade e luz.</p>
-        <h4>3. Balanceamento das Pás</h4>
-        <p>Pás desbalanceadas causam vibrações e desgaste precoce no motor. Certifique-se de que todas as pás estejam com os parafusos firmemente apertados.</p>
-        <p><strong>Prefere não arriscar?</strong> Nossos profissionais em Guarulhos fazem a instalação rápida e limpa em menos de 1 hora!</p>
+        <p>O ventilador deve ser fixado em uma caixa de luz reforÃ§ada de metal ou diretamente no concreto da laje. Tetos de gesso rebaixado exigem suporte prolongado ancorado no teto estrutural.</p>
+        <h4>2. Cheque a Voltagem e a FiaÃ§Ã£o</h4>
+        <p>Em Guarulhos, a voltagem padrÃ£o Ã© 110V/127V na maioria das residÃªncias, mas hÃ¡ instalaÃ§Ãµes em 220V. Ã‰ essencial identificar a fase, o neutro e o fio terra, alÃ©m de passar a fiaÃ§Ã£o do interruptor para controle de velocidade e luz.</p>
+        <h4>3. Balanceamento das PÃ¡s</h4>
+        <p>PÃ¡s desbalanceadas causam vibraÃ§Ãµes e desgaste precoce no motor. Certifique-se de que todas as pÃ¡s estejam com os parafusos firmemente apertados.</p>
+        <p><strong>Prefere nÃ£o arriscar?</strong> Nossos profissionais em Guarulhos fazem a instalaÃ§Ã£o rÃ¡pida e limpa em menos de 1 hora!</p>
       `
     },
     '2': {
-      title: 'Quando Trocar a Resistência do Chuveiro elétrico',
-      category: 'Hidráulica & Elétrica',
+      title: 'Quando Trocar a ResistÃªncia do Chuveiro elÃ©trico',
+      category: 'HidrÃ¡ulica & ElÃ©trica',
       date: '10 de Julho, 2026',
       content: `
-        <p>O chuveiro queimou ou parou de esquentar? Esse é um dos chamados mais frequentes que atendemos em apartamentos e casas em Guarulhos.</p>
-        <h4>Sinais de que a resistência queimou:</h4>
+        <p>O chuveiro queimou ou parou de esquentar? Esse Ã© um dos chamados mais frequentes que atendemos em apartamentos e casas em Guarulhos.</p>
+        <h4>Sinais de que a resistÃªncia queimou:</h4>
         <ul>
-          <li>A água sai fria mesmo com o seletor na posição "Inverno" ou "Quente".</li>
-          <li>Você ouviu um pequeno estalo no chuveiro e a água esfriou imediatamente.</li>
-          <li>O disjuntor do chuveiro disparou no quadro elétrico.</li>
+          <li>A Ã¡gua sai fria mesmo com o seletor na posiÃ§Ã£o "Inverno" ou "Quente".</li>
+          <li>VocÃª ouviu um pequeno estalo no chuveiro e a Ã¡gua esfriou imediatamente.</li>
+          <li>O disjuntor do chuveiro disparou no quadro elÃ©trico.</li>
         </ul>
         <h4>Cuidados ao trocar:</h4>
-        <p>Desligue sempre o disjuntor geral ou o disjuntor do banheiro antes de manusear o chuveiro. Após a troca da resistência, deixe correr água fria por alguns segundos antes de religar a energia para evitar queimar a nova peça a seco!</p>
+        <p>Desligue sempre o disjuntor geral ou o disjuntor do banheiro antes de manusear o chuveiro. ApÃ³s a troca da resistÃªncia, deixe correr Ã¡gua fria por alguns segundos antes de religar a energia para evitar queimar a nova peÃ§a a seco!</p>
       `
     },
     '3': {
       title: 'Como Escolher o Suporte de TV Ideal para sua Parede',
-      category: 'Instalações & TV',
+      category: 'InstalaÃ§Ãµes & TV',
       date: '02 de Julho, 2026',
       content: `
-        <p>Fixar a TV na parede libera espaço no painel ou rack e deixa o ambiente muito mais moderno e elegante.</p>
+        <p>Fixar a TV na parede libera espaÃ§o no painel ou rack e deixa o ambiente muito mais moderno e elegante.</p>
         <h4>Tipos de Suportes:</h4>
         <ul>
-          <li><strong>Fixos:</strong> Ideais para salas e quartos onde a TV fica paralela à parede. Baixo custo e ultra discreto.</li>
-          <li><strong>Inclináveis:</strong> Permitem ajustar o ângulo vertical para eliminar reflexos de luz.</li>
-          <li><strong>Articulados:</strong> Perfeitos para ambientes integrados ou cantos, permitindo girar a TV para diferentes ângulos.</li>
+          <li><strong>Fixos:</strong> Ideais para salas e quartos onde a TV fica paralela Ã  parede. Baixo custo e ultra discreto.</li>
+          <li><strong>InclinÃ¡veis:</strong> Permitem ajustar o Ã¢ngulo vertical para eliminar reflexos de luz.</li>
+          <li><strong>Articulados:</strong> Perfeitos para ambientes integrados ou cantos, permitindo girar a TV para diferentes Ã¢ngulos.</li>
         </ul>
-        <h4>Atenção ao Tipo de Parede:</h4>
-        <p>Paredes de drywall necessitam de buchas específicas para gesso (como a bucha Fly ou basculante). Em paredes de bloco estrutural ou tijolo baiano, as buchas convencionais de 8mm ou 10mm garantem sustentação total.</p>
+        <h4>AtenÃ§Ã£o ao Tipo de Parede:</h4>
+        <p>Paredes de drywall necessitam de buchas especÃ­ficas para gesso (como a bucha Fly ou basculante). Em paredes de bloco estrutural ou tijolo baiano, as buchas convencionais de 8mm ou 10mm garantem sustentaÃ§Ã£o total.</p>
       `
     },
     '4': {
-      title: 'Quanto Custa Montar Móveis em Guarulhos? Guia Completo',
-      category: 'Montagem de Móveis',
+      title: 'Quanto Custa Montar MÃ³veis em Guarulhos? Guia Completo',
+      category: 'Montagem de MÃ³veis',
       date: '25 de Junho, 2026',
       content: `
-        <p>Comprou um guarda-roupa, mesa, rack ou armário de cozinha pela internet e precisa de montagem profissional em Guarulhos?</p>
-        <p>O valor da montagem varia conforme a complexidade, dimensão do móvel e quantidade de portas/gavetas. Em geral, pequenos móveis (como cômodas e mesas de cabeceira) têm valores super acessíveis, enquanto guarda-roupas grandes de portas de correr exigem maior tempo de montagem e regulagem de portas.</p>
-        <p>Chame a nossa equipe no WhatsApp para enviar uma foto do manual ou do link do móvel e receba um orçamento exato e sem compromisso!</p>
+        <p>Comprou um guarda-roupa, mesa, rack ou armÃ¡rio de cozinha pela internet e precisa de montagem profissional em Guarulhos?</p>
+        <p>O valor da montagem varia conforme a complexidade, dimensÃ£o do mÃ³vel e quantidade de portas/gavetas. Em geral, pequenos mÃ³veis (como cÃ´modas e mesas de cabeceira) tÃªm valores super acessÃ­veis, enquanto guarda-roupas grandes de portas de correr exigem maior tempo de montagem e regulagem de portas.</p>
+        <p>Chame a nossa equipe no WhatsApp para enviar uma foto do manual ou do link do mÃ³vel e receba um orÃ§amento exato e sem compromisso!</p>
       `
     },
     '5': {
       title: 'Pequenos Reparos que Evitam Grandes Problemas no Apartamento',
-      category: 'Manutenção Residencial',
+      category: 'ManutenÃ§Ã£o Residencial',
       date: '15 de Junho, 2026',
       content: `
-        <p>Ignorar pequenos vazamentos ou tomadas esquentando pode custar caro no futuro. Confira os reparos mais preventivos para condomínios:</p>
+        <p>Ignorar pequenos vazamentos ou tomadas esquentando pode custar caro no futuro. Confira os reparos mais preventivos para condomÃ­nios:</p>
         <ul>
-          <li><strong>Vazamentos em Torneiras e Sifões:</strong> Um gotejamento contínuo danifica armários de mdf e aumenta a conta de água do condomínio.</li>
-          <li><strong>Tomadas Frouxas ou Queimadas:</strong> Evita mal contato e curtos elétricos em eletrodomésticos caros.</li>
-          <li><strong>Silicone no Box do Banheiro:</strong> Previne infiltrações de água para o vizinho do andar de baixo.</li>
+          <li><strong>Vazamentos em Torneiras e SifÃµes:</strong> Um gotejamento contÃ­nuo danifica armÃ¡rios de mdf e aumenta a conta de Ã¡gua do condomÃ­nio.</li>
+          <li><strong>Tomadas Frouxas ou Queimadas:</strong> Evita mal contato e curtos elÃ©tricos em eletrodomÃ©sticos caros.</li>
+          <li><strong>Silicone no Box do Banheiro:</strong> Previne infiltraÃ§Ãµes de Ã¡gua para o vizinho do andar de baixo.</li>
         </ul>
       `
     },
     '6': {
-      title: 'Dicas de Manutenção Residencial Preventiva para Casas e Condomínios',
+      title: 'Dicas de ManutenÃ§Ã£o Residencial Preventiva para Casas e CondomÃ­nios',
       category: 'Dicas de Casa',
       date: '05 de Junho, 2026',
       content: `
-        <p>Manter a manutenção da sua residência em dia garante valorização do imóvel, economia de energia e tranquilidade para sua família.</p>
-        <p>Crie um checklist semestral para inspecionar fechaduras, vedação de janelas, limpeza de sifões e teste de disjuntores DR. Conte com um Marido de Aluguel profissional em Guarulhos para cuidar de tudo para você com garantia!</p>
+        <p>Manter a manutenÃ§Ã£o da sua residÃªncia em dia garante valorizaÃ§Ã£o do imÃ³vel, economia de energia e tranquilidade para sua famÃ­lia.</p>
+        <p>Crie um checklist semestral para inspecionar fechaduras, vedaÃ§Ã£o de janelas, limpeza de sifÃµes e teste de disjuntores DR. Conte com um Marido de Aluguel profissional em Guarulhos para cuidar de tudo para vocÃª com garantia!</p>
       `
     }
   };
@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
         blogModalBody.innerHTML = `
           <div style="margin-bottom: 1rem;">
             <span style="color: var(--accent); font-weight:700; font-size: 0.85rem; text-transform: uppercase;">${article.category}</span>
-            <span style="color: var(--gray-600); font-size:0.85rem; margin-left: 1rem;">📅 ${article.date}</span>
+            <span style="color: var(--gray-600); font-size:0.85rem; margin-left: 1rem;">ðŸ“… ${article.date}</span>
           </div>
           ${article.content}
         `;
@@ -258,10 +258,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const directWhatsappBtns = document.querySelectorAll('.direct-whatsapp-link');
   directWhatsappBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
+      const href = btn.getAttribute('href');
+      if (href && href !== '#') return;
       e.preventDefault();
-      const whatsappNumber = '5511917256460';
-      const defaultMsg = encodeURIComponent('Olá! Encontrei seu site no Google e gostaria de solicitar um orçamento para atendimento em Guarulhos.');
-      window.open(`https://wa.me/${whatsappNumber}?text=${defaultMsg}`, '_blank');
+      window.open('https://wa.me/5511980604534', '_blank');
     });
   });
 
@@ -287,130 +287,5 @@ document.addEventListener('DOMContentLoaded', () => {
     el.style.transition = 'all 0.5s ease-out';
     observer.observe(el);
   });
-
-  // 8. Chat de Atendimento Online (WhatsApp)
-  const chatWidgetHTML = `
-    <div class="chat-widget" id="chatWidget">
-      <div class="chat-panel">
-        <div class="chat-header">
-          <div class="chat-avatar"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-          <div class="chat-header-info">
-            <strong>Marido de Aluguel Guarulhos</strong>
-            <span class="chat-status"><span class="chat-status-dot"></span> Online agora</span>
-          </div>
-          <button class="chat-close-btn" id="chatCloseBtn" aria-label="Fechar chat">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-        <div class="chat-body" id="chatBody">
-          <div class="chat-msg bot">
-            Olá! Sou o atendente virtual do Marido de Aluguel em Guarulhos.
-            Preciso de um reparo ou montagem de móveis? Me conte o que aconteceu e em qual bairro você está que te ajudo rapidinho.
-            <span class="msg-time">08:00</span>
-          </div>
-          <div class="chat-msg user" style="display:none;" id="chatUserMsg"></div>
-        </div>
-        <div class="chat-quick" id="chatQuick">
-          <button class="chat-chip" data-msg="Preciso de um reparo geral em casa em Guarulhos.">
-            <i class="fa-solid fa-screwdriver-wrench"></i> Reparo geral
-          </button>
-          <button class="chat-chip" data-msg="Preciso de um eletricista em Guarulhos.">
-            <i class="fa-solid fa-bolt"></i> Reparo elétrico
-          </button>
-          <button class="chat-chip" data-msg="Preciso de um encanador em Guarulhos.">
-            <i class="fa-solid fa-droplet"></i> Reparo hidráulico
-          </button>
-          <button class="chat-chip" data-msg="Preciso de montagem de móveis em Guarulhos.">
-            <i class="fa-solid fa-couch"></i> Montagem de móveis
-          </button>
-        </div>
-        <div class="chat-footer">
-          <input type="text" id="chatInput" class="chat-input" placeholder="Digite sua mensagem..." aria-label="Digite sua mensagem">
-          <button class="chat-send" id="chatSendBtn" aria-label="Enviar mensagem">
-            <i class="fa-solid fa-paper-plane"></i>
-          </button>
-        </div>
-      </div>
-      <button class="chat-launcher" id="chatLauncher" aria-label="Abrir chat de atendimento">
-        <i class="fa-solid fa-comment-dots launcher-open-icon"></i>
-        <i class="fa-solid fa-xmark launcher-close-icon"></i>
-        <span class="chat-launcher-badge">1</span>
-      </button>
-    </div>
-  `;
-
-  document.body.insertAdjacentHTML('beforeend', chatWidgetHTML);
-
-  const chatWidget = document.getElementById('chatWidget');
-  const chatLauncher = document.getElementById('chatLauncher');
-  const chatCloseBtn = document.getElementById('chatCloseBtn');
-  const chatInput = document.getElementById('chatInput');
-  const chatSendBtn = document.getElementById('chatSendBtn');
-  const chatBody = document.getElementById('chatBody');
-  const chatUserMsg = document.getElementById('chatUserMsg');
-  const chatQuick = document.getElementById('chatQuick');
-
-  const whatsappChatNumber = '5511917256460';
-
-  function sendChatToWhatsApp(message) {
-    const fullMsg = `Olá! Falei com o atendente virtual do site.\n\n*Mensagem:* ${message}\n\nPor favor, me passe um orçamento.`;
-    const url = `https://wa.me/${whatsappChatNumber}?text=${encodeURIComponent(fullMsg)}`;
-    window.open(url, '_blank');
-  }
-
-  function showUserMessage(message) {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    chatUserMsg.textContent = message;
-    const timeSpan = document.createElement('span');
-    timeSpan.className = 'msg-time';
-    timeSpan.textContent = `${hours}:${minutes}`;
-    chatUserMsg.appendChild(timeSpan);
-    chatUserMsg.style.display = 'block';
-    chatQuick.style.display = 'none';
-    chatBody.scrollTop = chatBody.scrollHeight;
-  }
-
-  if (chatLauncher) {
-    chatLauncher.addEventListener('click', () => {
-      chatWidget.classList.toggle('open');
-    });
-  }
-
-  if (chatCloseBtn) {
-    chatCloseBtn.addEventListener('click', () => {
-      chatWidget.classList.remove('open');
-    });
-  }
-
-  const handleChatMessage = (message) => {
-    const text = (message || '').trim();
-    if (!text) return;
-    showUserMessage(text);
-    setTimeout(() => sendChatToWhatsApp(text), 600);
-  };
-
-  document.querySelectorAll('.chat-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      handleChatMessage(chip.getAttribute('data-msg'));
-    });
-  });
-
-  if (chatSendBtn) {
-    chatSendBtn.addEventListener('click', () => {
-      handleChatMessage(chatInput.value);
-      chatInput.value = '';
-    });
-  }
-
-  if (chatInput) {
-    chatInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        handleChatMessage(chatInput.value);
-        chatInput.value = '';
-      }
-    });
-  }
 });
+
