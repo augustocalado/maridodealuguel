@@ -149,18 +149,33 @@
       const now = new Date();
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
-      // Load Stats
-      const [
-        { count: totalOrc },
-        { data: orcMes },
-        { count: totalClientes },
-        { data: statusData }
-      ] = await Promise.all([
-        db.from('orcamentos').select('*', { count: 'exact', head: true }).gte('criado_em', monthStart),
-        db.from('orcamentos').select('status,total,lucro_liquido').gte('criado_em', monthStart),
-        db.from('clientes').select('*', { count: 'exact', head: true }),
-        db.from('orcamentos').select('status,total').gte('criado_em', monthStart)
-      ]);
+      // Load Stats with fallback if columns don't exist yet
+      let orcMes = [];
+      let totalOrc = 0;
+      let totalClientes = 0;
+      let statusData = [];
+
+      try {
+        const resOrc = await db.from('orcamentos').select('status,total,lucro_liquido').gte('criado_em', monthStart);
+        if (resOrc.error) {
+          const resFallback = await db.from('orcamentos').select('status,total').gte('criado_em', monthStart);
+          orcMes = resFallback.data || [];
+        } else {
+          orcMes = resOrc.data || [];
+        }
+      } catch (e) {
+        const resFallback = await db.from('orcamentos').select('status,total').gte('criado_em', monthStart);
+        orcMes = resFallback.data || [];
+      }
+
+      const { count: cOrc } = await db.from('orcamentos').select('*', { count: 'exact', head: true }).gte('criado_em', monthStart);
+      totalOrc = cOrc || 0;
+
+      const { count: cCli } = await db.from('clientes').select('*', { count: 'exact', head: true });
+      totalClientes = cCli || 0;
+
+      const { data: stData } = await db.from('orcamentos').select('status,total').gte('criado_em', monthStart);
+      statusData = stData || [];
 
       document.getElementById('stat-orcamentos').textContent = totalOrc ?? 0;
       document.getElementById('stat-clientes').textContent = totalClientes ?? 0;
@@ -215,13 +230,19 @@
       const todayStart = new Date(); todayStart.setHours(0,0,0,0);
       const todayEnd = new Date(); todayEnd.setHours(23,59,59,999);
       
-      const { data: agenda } = await db
-        .from('orcamentos')
-        .select('id, numero, data_agendamento, clientes(nome, bairro)')
-        .gte('data_agendamento', todayStart.toISOString())
-        .lte('data_agendamento', todayEnd.toISOString())
-        .order('data_agendamento', { ascending: true })
-        .limit(5);
+      let agenda = [];
+      try {
+        const { data: agData, error: agErr } = await db
+          .from('orcamentos')
+          .select('id, numero, data_agendamento, clientes(nome, bairro)')
+          .gte('data_agendamento', todayStart.toISOString())
+          .lte('data_agendamento', todayEnd.toISOString())
+          .order('data_agendamento', { ascending: true })
+          .limit(5);
+        if (!agErr && agData) agenda = agData;
+      } catch (e) {
+        agenda = [];
+      }
 
       const agendaEl = document.getElementById('agenda-list');
       if (!agenda || agenda.length === 0) {

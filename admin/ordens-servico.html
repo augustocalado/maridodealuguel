@@ -109,7 +109,7 @@
       document.getElementById('table-wrap').style.display = 'none';
       document.getElementById('empty-state').style.display = 'none';
 
-      const { data, error } = await db.from('orcamentos')
+      let { data, error } = await db.from('orcamentos')
         .select(`
           id, numero, status, total, data_agendamento, criado_em, observacoes,
           clientes ( id, nome, telefone, endereco, bairro, cidade ),
@@ -117,12 +117,18 @@
         `)
         .order('criado_em', { ascending: false });
 
-      document.getElementById('table-loading').style.display = 'none';
-
       if (error) {
-        showToast('Erro ao carregar Ordens de Serviço', 'error');
-        return;
+        const fbRes = await db.from('orcamentos')
+          .select(`
+            id, numero, status, total, criado_em, observacoes,
+            clientes ( id, nome, telefone, endereco, bairro, cidade ),
+            orcamento_itens ( descricao )
+          `)
+          .order('criado_em', { ascending: false });
+        data = fbRes.data;
       }
+
+      document.getElementById('table-loading').style.display = 'none';
 
       allOrders = data || [];
       renderTable();

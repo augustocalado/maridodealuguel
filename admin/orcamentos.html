@@ -117,8 +117,17 @@
 
       if (clienteFilter) query = query.eq('cliente_id', clienteFilter);
 
-      const { data, error } = await query;
-      if (error) { showToast('Erro ao carregar orçamentos', 'error'); return; }
+      let { data, error } = await query;
+      if (error) {
+        let fallbackQuery = db.from('orcamentos')
+          .select('id, numero, status, total, criado_em, observacoes, clientes(id, nome, telefone)')
+          .order('criado_em', { ascending: false });
+        if (clienteFilter) fallbackQuery = fallbackQuery.eq('cliente_id', clienteFilter);
+        const fbRes = await fallbackQuery;
+        data = fbRes.data;
+        error = fbRes.error;
+      }
+      if (error) { showToast('Erro ao carregar orçamentos: ' + error.message, 'error'); return; }
       allQuotes = data || [];
       renderTable();
     }

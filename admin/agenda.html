@@ -134,7 +134,7 @@
       document.getElementById('agenda-list').style.display = 'none';
       document.getElementById('empty-state').style.display = 'none';
 
-      const { data, error } = await db.from('orcamentos')
+      let { data, error } = await db.from('orcamentos')
         .select(`
           id, numero, status, total, data_agendamento, observacoes,
           clientes ( id, nome, telefone, endereco, bairro, cidade ),
@@ -142,13 +142,21 @@
         `)
         .order('data_agendamento', { ascending: true, nullsLast: true });
 
-      document.getElementById('agenda-loading').style.display = 'none';
-
       if (error) {
-        showToast('Erro ao carregar agendamentos', 'error');
-        return;
+        // Fallback if data_agendamento doesn't exist
+        const fbRes = await db.from('orcamentos')
+          .select(`
+            id, numero, status, total, criado_em, observacoes,
+            clientes ( id, nome, telefone, endereco, bairro, cidade ),
+            orcamento_itens ( descricao )
+          `)
+          .order('criado_em', { ascending: false });
+        
+        data = fbRes.data;
+        showToast('Execute update-premium.sql no Supabase para ativar agendamentos', 'warning');
       }
 
+      document.getElementById('agenda-loading').style.display = 'none';
       allScheduled = data || [];
       renderAgenda();
     }
