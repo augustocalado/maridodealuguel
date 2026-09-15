@@ -232,6 +232,57 @@
       font-size: 10.5px;
     }
 
+    @media (max-width: 768px) {
+      body {
+        padding: 12px 8px;
+        overflow-x: hidden;
+      }
+      .os-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      .os-toolbar > div {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+      }
+      .os-toolbar .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      .os-sheet {
+        padding: 18px 12px;
+        border-radius: 8px;
+      }
+      .os-header {
+        flex-direction: column;
+        gap: 12px;
+      }
+      .os-number-badge {
+        width: 100%;
+        text-align: left;
+      }
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .checklist-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .signatures-block {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        margin-top: 20px;
+      }
+      table th, table td {
+        padding: 7px 6px;
+        font-size: 12px;
+      }
+    }
+
     @media print {
       body { background: #FFF; padding: 0; }
       .os-toolbar { display: none; }

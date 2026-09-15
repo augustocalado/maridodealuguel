@@ -180,7 +180,32 @@ function getSidebarHTML(active = '') {
       </div>
     </div>
   </aside>
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleMobileSidebar(false)"></div>
   <div id="toast-container" class="toast-container"></div>`;
 }
 
-document.addEventListener('DOMContentLoaded', setActiveNav);
+function toggleMobileSidebar(show) {
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (!sidebar) return;
+  if (show === undefined) {
+    const isOpen = sidebar.classList.toggle('open');
+    if (backdrop) backdrop.classList.toggle('active', isOpen);
+  } else if (show) {
+    sidebar.classList.add('open');
+    if (backdrop) backdrop.classList.add('active');
+  } else {
+    sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('active');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setActiveNav();
+  // Close sidebar on clicking link on mobile
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      if (window.innerWidth <= 768) toggleMobileSidebar(false);
+    });
+  });
+});

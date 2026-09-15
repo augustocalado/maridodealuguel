@@ -50,6 +50,9 @@
 
 html, body {
   height: 100%;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   font-family: 'Plus Jakarta Sans', sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -65,7 +68,14 @@ html, body {
 /* ==========================================
    LAYOUT
    ========================================== */
-.admin-layout { display: flex; min-height: 100vh; }
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  min-width: 0;
+}
 
 /* ---- SIDEBAR ---- */
 .sidebar {
@@ -151,24 +161,41 @@ html, body {
 .btn-user-action:hover { color: var(--accent); background: var(--accent-glow); }
 
 /* ---- MAIN CONTENT ---- */
-.main-content { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.main-content {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
 
 /* ---- TOPBAR ---- */
 .topbar {
-  height: var(--topbar-height);
+  min-height: var(--topbar-height);
   background: rgba(13,19,33,0.8);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 28px; position: sticky; top: 0; z-index: 50;
+  padding: 0 24px; position: sticky; top: 0; z-index: 50;
+  gap: 12px;
 }
-.topbar-left { display: flex; align-items: center; gap: 10px; }
-.page-title { font-size: 18px; font-weight: 700; }
-.page-subtitle { font-size: 12.5px; color: var(--text-muted); }
-.topbar-right { display: flex; align-items: center; gap: 10px; }
+.topbar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.page-title { font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.page-subtitle { font-size: 12.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
 /* ---- PAGE CONTENT ---- */
-.page-content { padding: 28px; flex: 1; }
+.page-content {
+  padding: 24px;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
 
 /* ==========================================
    COMPONENTS
@@ -325,13 +352,16 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 
 /* ---- TABS ---- */
 .tabs {
-  display: flex; gap: 4px; background: rgba(255,255,255,0.04);
-  border-radius: 10px; padding: 4px; width: fit-content; margin-bottom: 18px; flex-wrap: wrap;
+  display: flex; gap: 6px; background: rgba(255,255,255,0.04);
+  border-radius: 10px; padding: 4px; width: 100%; max-width: 100%;
+  margin-bottom: 18px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+  flex-wrap: nowrap;
 }
 .tab {
   padding: 7px 14px; border-radius: 8px; border: none;
   background: none; color: var(--text-muted); font-family: inherit;
   font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);
+  white-space: nowrap; flex-shrink: 0;
 }
 .tab.active { background: var(--accent); color: #000; }
 .tab:hover:not(.active) { color: var(--text-primary); background: rgba(255,255,255,0.06); }
@@ -536,21 +566,296 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 hr.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
 
 /* ==========================================
-   RESPONSIVE
+   ORÇAMENTO FORM GRID
    ========================================== */
-@media (max-width: 900px) {
-  .dashboard-grid { grid-template-columns: 1fr; }
+.orcamento-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+.orc-summary-col {
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
+/* ==========================================
+   RESPONSIVE (TABLETS & DESKTOPS PEQUENOS)
+   ========================================== */
+@media (max-width: 992px) {
+  .orcamento-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .orc-summary-col {
+    position: static !important;
+    width: 100%;
+    margin-top: 10px;
+  }
+  .summary-box {
+    position: static !important;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE (SMARTPHONES / MOBILE)
+   ========================================== */
 @media (max-width: 768px) {
-  :root { --sidebar-width: 0px; }
-  .sidebar { transform: translateX(-260px); width: 260px; }
-  .sidebar.open { transform: translateX(0); }
-  .main-content { margin-left: 0; }
-  .page-content { padding: 16px; }
-  .form-row, .form-row-3 { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .mobile-menu-btn { display: flex !important; }
+  :root {
+    --sidebar-width: 0px;
+  }
+  
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .admin-layout {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Sidebar Mobile Drawer */
+  .sidebar {
+    transform: translateX(-100%);
+    width: 275px;
+    max-width: 85vw;
+    z-index: 300;
+    box-shadow: 4px 0 25px rgba(0,0,0,0.8);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Backdrop Overlay */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(3px);
+    z-index: 290;
+  }
+  .sidebar-backdrop.active {
+    display: block;
+  }
+
+  /* Topbar Mobile */
+  .topbar {
+    padding: 0 12px;
+    height: auto;
+    min-height: 56px;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+  }
+  .topbar-left {
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+  .topbar-right {
+    gap: 6px;
+  }
+  .page-title {
+    font-size: 15px;
+    line-height: 1.2;
+  }
+  .page-subtitle {
+    font-size: 11px;
+    display: none; /* Hide subtitle on mobile to give space to buttons */
+  }
+
+  /* Page Content */
+  .page-content {
+    padding: 12px 10px;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Cards */
+  .card {
+    padding: 14px 12px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+  }
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  /* Forms */
+  .form-row, .form-row-3 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .form-control {
+    font-size: 14px; /* Prevents auto-zoom on iOS safari */
+    padding: 9px 12px;
+  }
+
+  /* Stats / KPI Grids */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-card {
+    padding: 14px;
+  }
+
+  /* Tables — Horizontal Scroll Protection */
+  .table-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    margin-bottom: 6px;
+  }
+  .table-container table {
+    min-width: 560px; /* Garante que os dados fiquem legíveis sem amassar */
+  }
+  thead th, tbody td {
+    padding: 9px 10px;
+    font-size: 12.5px;
+  }
+
+  /* Buttons & Actions */
+  .btn-sm {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  .actions-cell {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  /* Modais no Mobile */
+  .modal-overlay {
+    padding: 10px;
+  }
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    max-height: calc(100vh - 20px);
+    border-radius: 12px;
+  }
+  .modal-header {
+    padding: 14px 16px;
+  }
+  .modal-body {
+    padding: 16px 14px;
+  }
+  .modal-footer {
+    padding: 12px 14px;
+    flex-wrap: wrap;
+  }
+  .modal-footer .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Toast Alerts */
+  .toast-container {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+  .toast {
+    min-width: 0;
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 12.5px;
+  }
+
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+
+  /* Documents & Print Sheets on Mobile View */
+  .comprovante-page {
+    padding: 10px 8px;
+  }
+  .comprovante-doc,
+  .certificate-sheet,
+  .os-sheet {
+    padding: 18px 12px !important;
+    border-radius: 8px;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-shadow: none !important;
+  }
+  .comp-header,
+  .os-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .comp-badge,
+  .os-number-badge {
+    text-align: left;
+    width: 100%;
+  }
+  .comp-client-grid,
+  .info-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .comp-signatures,
+  .signatures,
+  .signatures-block {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    margin-top: 24px;
+  }
+  .comp-totals-box {
+    width: 100% !important;
+  }
+  .comp-table th, .comp-table td {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  /* Login Mobile */
+  .login-page {
+    padding: 16px 12px;
+  }
+  .login-card {
+    padding: 28px 18px;
+    border-radius: 16px;
+  }
+  .login-header {
+    margin-bottom: 24px;
+  }
+  .login-icon {
+    width: 52px;
+    height: 52px;
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  .login-title {
+    font-size: 19px;
+  }
 }
 
 .mobile-menu-btn {
@@ -563,8 +868,9 @@ hr.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; 
    ========================================== */
 @media print {
   body { background: #fff !important; }
-  .comprovante-toolbar, .sidebar, .topbar, .admin-layout > .sidebar { display: none !important; }
+  .comprovante-toolbar, .os-toolbar, .actions-bar, .sidebar, .topbar, .admin-layout > .sidebar, .sidebar-backdrop { display: none !important; }
   .main-content { margin-left: 0 !important; }
   .comprovante-page { padding: 0 !important; background: #fff !important; }
-  .comprovante-doc { box-shadow: none !important; border-radius: 0 !important; max-width: 100% !important; }
+  .comprovante-doc, .certificate-sheet, .os-sheet { box-shadow: none !important; border-radius: 0 !important; max-width: 100% !important; border: none !important; }
 }
+
