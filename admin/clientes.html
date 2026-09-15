@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes — Admin | Marido de Aluguel</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <div id="sidebar-mount"></div>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div>
+            <div class="page-title">Clientes</div>
+            <div class="page-subtitle">Cadastro e histórico de clientes</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-primary" id="btn-novo-cliente">
+            <i class="fas fa-user-plus"></i> Novo Cliente
+          </button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div class="toolbar">
+          <div class="search-wrap flex-1">
+            <i class="fas fa-search"></i>
+            <input class="form-control" type="text" id="search-input" placeholder="Buscar por nome, telefone ou e-mail...">
+          </div>
+        </div>
+
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div id="table-loading" class="loading-overlay"><span class="spinner"></span> Carregando...</div>
+          <div class="table-container" id="table-wrap" style="display:none">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Telefone</th>
+                  <th>E-mail</th>
+                  <th>Bairro / Cidade</th>
+                  <th>Orçamentos</th>
+                  <th>Cadastro</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="clients-tbody"></tbody>
+            </table>
+          </div>
+          <div id="empty-state" class="empty-state" style="display:none">
+            <i class="fas fa-users"></i>
+            <h3>Nenhum cliente encontrado</h3>
+            <p>Cadastre seu primeiro cliente</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Cliente -->
+  <div class="modal-overlay" id="modal-cliente">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-user"></i> <span id="modal-title-text">Novo Cliente</span></div>
+        <button class="modal-close" onclick="closeModal('modal-cliente')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="form-cliente">
+        <div class="modal-body">
+          <input type="hidden" id="cli-id">
+          <div class="form-group">
+            <label class="form-label">Nome Completo *</label>
+            <input class="form-control" id="cli-nome" placeholder="Ex: Maria Silva" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Telefone / WhatsApp</label>
+              <input class="form-control" id="cli-tel" placeholder="(11) 99999-9999" type="tel">
+            </div>
+            <div class="form-group">
+              <label class="form-label">E-mail</label>
+              <input class="form-control" id="cli-email" placeholder="cliente@email.com" type="email">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Endereço</label>
+            <input class="form-control" id="cli-end" placeholder="Rua, número, complemento">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Bairro</label>
+              <input class="form-control" id="cli-bairro" placeholder="Ex: Macedo">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cidade</label>
+              <input class="form-control" id="cli-cidade" placeholder="Guarulhos" value="Guarulhos">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Observações</label>
+            <textarea class="form-control" id="cli-obs" placeholder="Anotações sobre o cliente, preferências, etc."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-cliente')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-cli">
+            <i class="fas fa-check"></i> Salvar Cliente
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin.js"></script>
+  <script>
+    let allClients = [];
+    let orcCount = {};
+
+    (async () => {
+      await requireAuth();
+      document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('clientes.html');
+      await loadClients();
+      document.getElementById('search-input').addEventListener('input', renderTable);
+      document.getElementById('btn-novo-cliente').addEventListener('click', openNewModal);
+    })();
+
+    async function loadClients() {
+      document.getElementById('table-loading').style.display = 'flex';
+      document.getElementById('table-wrap').style.display = 'none';
+      document.getElementById('empty-state').style.display = 'none';
+
+      const [{ data: clients }, { data: orcs }] = await Promise.all([
+        db.from('clientes').select('*').order('nome'),
+        db.from('orcamentos').select('cliente_id')
+      ]);
+
+      allClients = clients || [];
+      orcCount = {};
+      (orcs || []).forEach(o => { if (o.cliente_id) orcCount[o.cliente_id] = (orcCount[o.cliente_id] || 0) + 1; });
+      renderTable();
+    }
+
+    function renderTable() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const filtered = allClients.filter(c =>
+        !search ||
+        c.nome.toLowerCase().includes(search) ||
+        (c.telefone || '').includes(search) ||
+        (c.email || '').toLowerCase().includes(search)
+      );
+
+      document.getElementById('table-loading').style.display = 'none';
+
+      if (filtered.length === 0) {
+        document.getElementById('table-wrap').style.display = 'none';
+        document.getElementById('empty-state').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('table-wrap').style.display = 'block';
+      document.getElementById('empty-state').style.display = 'none';
+
+      document.getElementById('clients-tbody').innerHTML = filtered.map(c => `
+        <tr>
+          <td>
+            <div style="font-weight:700">${c.nome}</div>
+            ${c.observacoes ? `<div style="font-size:11px;color:var(--text-muted)">${c.observacoes.substring(0,50)}…</div>` : ''}
+          </td>
+          <td>
+            ${c.telefone ? `<a href="https://wa.me/55${c.telefone.replace(/\D/g,'')}" target="_blank" style="color:var(--success);text-decoration:none;font-weight:600">
+              <i class="fab fa-whatsapp"></i> ${formatPhone(c.telefone)}
+            </a>` : '<span class="text-muted">—</span>'}
+          </td>
+          <td style="color:var(--text-secondary)">${c.email || '—'}</td>
+          <td style="font-size:12.5px;color:var(--text-muted)">
+            ${[c.bairro, c.cidade].filter(Boolean).join(' / ') || '—'}
+          </td>
+          <td>
+            <a href="orcamentos.html?cliente=${c.id}" style="color:var(--accent);font-weight:700;text-decoration:none">
+              ${orcCount[c.id] || 0} orç.
+            </a>
+          </td>
+          <td style="font-size:12.5px;color:var(--text-muted)">${formatDate(c.criado_em)}</td>
+          <td>
+            <div class="actions-cell">
+              <a href="orcamento-novo.html?cliente=${c.id}" class="btn btn-success btn-icon btn-sm" title="Novo Orçamento">
+                <i class="fas fa-file-plus"></i>
+              </a>
+              <button class="btn btn-secondary btn-icon btn-sm" onclick="editClient('${c.id}')" title="Editar">
+                <i class="fas fa-pen"></i>
+              </button>
+              <button class="btn btn-danger btn-icon btn-sm" onclick="deleteClient('${c.id}','${c.nome.replace(/'/g,'\\\'')}')" title="Excluir">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+
+    function openNewModal() {
+      document.getElementById('modal-title-text').textContent = 'Novo Cliente';
+      document.getElementById('cli-id').value = '';
+      document.getElementById('form-cliente').reset();
+      document.getElementById('cli-cidade').value = 'Guarulhos';
+      openModal('modal-cliente');
+    }
+
+    function editClient(id) {
+      const c = allClients.find(x => x.id === id);
+      if (!c) return;
+      document.getElementById('modal-title-text').textContent = 'Editar Cliente';
+      document.getElementById('cli-id').value = c.id;
+      document.getElementById('cli-nome').value = c.nome;
+      document.getElementById('cli-tel').value = c.telefone || '';
+      document.getElementById('cli-email').value = c.email || '';
+      document.getElementById('cli-end').value = c.endereco || '';
+      document.getElementById('cli-bairro').value = c.bairro || '';
+      document.getElementById('cli-cidade').value = c.cidade || 'Guarulhos';
+      document.getElementById('cli-obs').value = c.observacoes || '';
+      openModal('modal-cliente');
+    }
+
+    document.getElementById('form-cliente').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-cli');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Salvando...';
+
+      const id = document.getElementById('cli-id').value;
+      const payload = {
+        nome: document.getElementById('cli-nome').value.trim(),
+        telefone: document.getElementById('cli-tel').value.trim() || null,
+        email: document.getElementById('cli-email').value.trim() || null,
+        endereco: document.getElementById('cli-end').value.trim() || null,
+        bairro: document.getElementById('cli-bairro').value.trim() || null,
+        cidade: document.getElementById('cli-cidade').value.trim() || 'Guarulhos',
+        observacoes: document.getElementById('cli-obs').value.trim() || null
+      };
+
+      let error;
+      if (id) {
+        ({ error } = await db.from('clientes').update(payload).eq('id', id));
+      } else {
+        ({ error } = await db.from('clientes').insert(payload));
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check"></i> Salvar Cliente';
+
+      if (error) { showToast('Erro ao salvar: ' + error.message, 'error'); return; }
+      showToast(id ? 'Cliente atualizado!' : 'Cliente cadastrado!', 'success');
+      closeModal('modal-cliente');
+      await loadClients();
+    });
+
+    async function deleteClient(id, nome) {
+      const count = orcCount[id] || 0;
+      const msg = count > 0
+        ? `"${nome}" tem ${count} orçamento(s) vinculado(s). Deseja excluir mesmo assim?`
+        : `Excluir "${nome}"? Essa ação não pode ser desfeita.`;
+      if (!confirm(msg)) return;
+      const { error } = await db.from('clientes').delete().eq('id', id);
+      if (error) { showToast('Erro ao excluir: ' + error.message, 'error'); return; }
+      showToast('Cliente excluído.', 'warning');
+      await loadClients();
+    }
+  </script>
+</body>
+</html>

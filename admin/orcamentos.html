@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orçamentos — Admin | Marido de Aluguel</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <div id="sidebar-mount"></div>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div>
+            <div class="page-title">Orçamentos</div>
+            <div class="page-subtitle">Gestão completa de orçamentos</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <a href="orcamento-novo.html" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Novo Orçamento
+          </a>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <!-- Status Tabs -->
+        <div class="tabs" id="status-tabs">
+          <button class="tab active" data-status="">Todos</button>
+          <button class="tab" data-status="rascunho">Rascunho</button>
+          <button class="tab" data-status="enviado">Enviado</button>
+          <button class="tab" data-status="aprovado">Aprovado</button>
+          <button class="tab" data-status="executado">Executado</button>
+          <button class="tab" data-status="cancelado">Cancelado</button>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-wrap flex-1">
+            <i class="fas fa-search"></i>
+            <input class="form-control" type="text" id="search-input" placeholder="Buscar por número, cliente...">
+          </div>
+        </div>
+
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div id="table-loading" class="loading-overlay"><span class="spinner"></span> Carregando...</div>
+          <div class="table-container" id="table-wrap" style="display:none">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Cliente</th>
+                  <th>Status</th>
+                  <th>Total</th>
+                  <th>Data</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="quotes-tbody"></tbody>
+            </table>
+          </div>
+          <div id="empty-state" class="empty-state" style="display:none">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <h3>Nenhum orçamento encontrado</h3>
+            <p>Crie seu primeiro orçamento</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin.js"></script>
+  <script>
+    let allQuotes = [];
+    let activeStatus = '';
+
+    (async () => {
+      await requireAuth();
+
+      // Check URL param for cliente filter
+      const params = new URLSearchParams(window.location.search);
+      const clienteFilter = params.get('cliente');
+
+      document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('orcamentos.html');
+      await loadQuotes(clienteFilter);
+
+      // Tab switching
+      document.getElementById('status-tabs').addEventListener('click', (e) => {
+        if (!e.target.classList.contains('tab')) return;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        activeStatus = e.target.dataset.status;
+        renderTable();
+      });
+
+      document.getElementById('search-input').addEventListener('input', renderTable);
+    })();
+
+    async function loadQuotes(clienteFilter = null) {
+      document.getElementById('table-loading').style.display = 'flex';
+      document.getElementById('table-wrap').style.display = 'none';
+      document.getElementById('empty-state').style.display = 'none';
+
+      let query = db.from('orcamentos')
+        .select('id, numero, status, total, criado_em, observacoes, clientes(id, nome, telefone)')
+        .order('criado_em', { ascending: false });
+
+      if (clienteFilter) query = query.eq('cliente_id', clienteFilter);
+
+      const { data, error } = await query;
+      if (error) { showToast('Erro ao carregar orçamentos', 'error'); return; }
+      allQuotes = data || [];
+      renderTable();
+    }
+
+    function renderTable() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const filtered = allQuotes.filter(q => {
+        const matchStatus = !activeStatus || q.status === activeStatus;
+        const matchSearch = !search ||
+          String(q.numero || '').includes(search) ||
+          (q.clientes?.nome || '').toLowerCase().includes(search);
+        return matchStatus && matchSearch;
+      });
+
+      document.getElementById('table-loading').style.display = 'none';
+
+      if (filtered.length === 0) {
+        document.getElementById('table-wrap').style.display = 'none';
+        document.getElementById('empty-state').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('table-wrap').style.display = 'block';
+      document.getElementById('empty-state').style.display = 'none';
+
+      document.getElementById('quotes-tbody').innerHTML = filtered.map(q => `
+        <tr>
+          <td><span class="fw-bold text-accent">#${q.numero || '—'}</span></td>
+          <td>
+            <div style="font-weight:600">${q.clientes?.nome || '<span class="text-muted">Sem cliente</span>'}</div>
+            ${q.clientes?.telefone ? `<div style="font-size:11.5px;color:var(--text-muted)">${formatPhone(q.clientes.telefone)}</div>` : ''}
+          </td>
+          <td>
+            <select class="form-control status-select" style="width:auto;padding:5px 10px;font-size:12.5px;" 
+                    onchange="updateStatus('${q.id}', this.value)">
+              <option value="rascunho" ${q.status==='rascunho'?'selected':''}>Rascunho</option>
+              <option value="enviado" ${q.status==='enviado'?'selected':''}>Enviado</option>
+              <option value="aprovado" ${q.status==='aprovado'?'selected':''}>Aprovado</option>
+              <option value="executado" ${q.status==='executado'?'selected':''}>Executado</option>
+              <option value="cancelado" ${q.status==='cancelado'?'selected':''}>Cancelado</option>
+            </select>
+          </td>
+          <td><span class="fw-bold" style="font-size:15px">${formatCurrency(q.total)}</span></td>
+          <td style="font-size:12.5px;color:var(--text-muted)">${formatDate(q.criado_em)}</td>
+          <td>
+            <div class="actions-cell">
+              <a href="comprovante.html?id=${q.id}" class="btn btn-secondary btn-sm" title="Ver / Imprimir">
+                <i class="fas fa-print"></i> Imprimir
+              </a>
+              <a href="orcamento-novo.html?id=${q.id}" class="btn btn-secondary btn-icon btn-sm" title="Editar">
+                <i class="fas fa-pen"></i>
+              </a>
+              <button class="btn btn-danger btn-icon btn-sm" onclick="deleteQuote('${q.id}', ${q.numero})" title="Excluir">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+
+    async function updateStatus(id, status) {
+      const { error } = await db.from('orcamentos').update({ status, atualizado_em: new Date().toISOString() }).eq('id', id);
+      if (error) { showToast('Erro ao atualizar status', 'error'); await loadQuotes(); return; }
+      const q = allQuotes.find(x => x.id === id);
+      if (q) q.status = status;
+      showToast('Status atualizado!', 'success');
+    }
+
+    async function deleteQuote(id, num) {
+      if (!confirm(`Excluir orçamento #${num}? Todos os itens serão removidos.`)) return;
+      const { error } = await db.from('orcamentos').delete().eq('id', id);
+      if (error) { showToast('Erro ao excluir', 'error'); return; }
+      showToast('Orçamento excluído.', 'warning');
+      await loadQuotes();
+    }
+  </script>
+</body>
+</html>

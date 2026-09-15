@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Admin | Marido de Aluguel</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <div id="sidebar-mount"></div>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div>
+            <div class="page-title">Dashboard</div>
+            <div class="page-subtitle">Visão geral do negócio</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <a href="orcamento-novo.html" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Novo Orçamento
+          </a>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <!-- Stats -->
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card" style="--stat-color:var(--accent);--stat-bg:var(--accent-glow)">
+            <div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-orcamentos">—</div>
+              <div class="stat-label">Orçamentos este mês</div>
+            </div>
+          </div>
+          <div class="stat-card" style="--stat-color:var(--success);--stat-bg:var(--success-bg)">
+            <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-aprovados">—</div>
+              <div class="stat-label">Aprovados / Executados</div>
+            </div>
+          </div>
+          <div class="stat-card" style="--stat-color:var(--info);--stat-bg:var(--info-bg)">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-clientes">—</div>
+              <div class="stat-label">Clientes cadastrados</div>
+            </div>
+          </div>
+          <div class="stat-card" style="--stat-color:var(--purple);--stat-bg:var(--purple-bg)">
+            <div class="stat-icon"><i class="fas fa-circle-dollar-to-slot"></i></div>
+            <div class="stat-info">
+              <div class="stat-value fs-18" id="stat-faturamento">—</div>
+              <div class="stat-label">Faturamento este mês</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grid: Recent + Quick Actions -->
+        <div class="dashboard-grid">
+          <!-- Recent Quotes -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-clock-rotate-left"></i> Últimos Orçamentos</div>
+              <a href="orcamentos.html" class="btn btn-secondary btn-sm">Ver todos</a>
+            </div>
+            <div id="recent-list" class="recent-list">
+              <div class="loading-overlay"><span class="spinner"></span> Carregando...</div>
+            </div>
+          </div>
+
+          <!-- Quick Actions + Status Summary -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <!-- Quick Actions -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fas fa-bolt"></i> Ações Rápidas</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <a href="orcamento-novo.html" class="btn btn-primary" style="justify-content:center;">
+                  <i class="fas fa-plus"></i> Criar Novo Orçamento
+                </a>
+                <a href="clientes.html" class="btn btn-secondary" style="justify-content:center;">
+                  <i class="fas fa-user-plus"></i> Cadastrar Cliente
+                </a>
+                <a href="produtos.html" class="btn btn-secondary" style="justify-content:center;">
+                  <i class="fas fa-toolbox"></i> Ver Serviços & Preços
+                </a>
+              </div>
+            </div>
+
+            <!-- Status Summary -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fas fa-chart-pie"></i> Resumo por Status</div>
+              </div>
+              <div id="status-summary" style="display:flex;flex-direction:column;gap:10px;">
+                <div class="loading-overlay" style="padding:20px"><span class="spinner"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin.js"></script>
+  <script>
+    (async () => {
+      const session = await requireAuth();
+      if (!session) return;
+
+      // Inject Sidebar
+      document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('dashboard.html');
+
+      // Date range: start of current month
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+      // Load Stats
+      const [
+        { count: totalOrc },
+        { data: orcMes },
+        { count: totalClientes },
+        { data: statusData }
+      ] = await Promise.all([
+        db.from('orcamentos').select('*', { count: 'exact', head: true }).gte('criado_em', monthStart),
+        db.from('orcamentos').select('status,total').gte('criado_em', monthStart),
+        db.from('clientes').select('*', { count: 'exact', head: true }),
+        db.from('orcamentos').select('status,total').gte('criado_em', monthStart)
+      ]);
+
+      document.getElementById('stat-orcamentos').textContent = totalOrc ?? 0;
+      document.getElementById('stat-clientes').textContent = totalClientes ?? 0;
+
+      const aprovados = (orcMes || []).filter(o => ['aprovado','executado'].includes(o.status));
+      document.getElementById('stat-aprovados').textContent = aprovados.length;
+
+      const faturamento = aprovados.reduce((s, o) => s + (parseFloat(o.total) || 0), 0);
+      document.getElementById('stat-faturamento').textContent = formatCurrency(faturamento);
+
+      // Status Summary
+      const statuses = ['rascunho','enviado','aprovado','executado','cancelado'];
+      const labels = { rascunho:'Rascunho', enviado:'Enviado', aprovado:'Aprovado', executado:'Executado', cancelado:'Cancelado' };
+      const grouped = {};
+      (statusData || []).forEach(o => { grouped[o.status] = (grouped[o.status] || 0) + 1; });
+
+      const summaryEl = document.getElementById('status-summary');
+      summaryEl.innerHTML = statuses.map(s => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);">
+          <span>${statusBadge(s)}</span>
+          <span class="fw-bold">${grouped[s] || 0}</span>
+        </div>`).join('');
+
+      // Recent Quotes
+      const { data: recent } = await db
+        .from('orcamentos')
+        .select('id, numero, status, total, criado_em, clientes(nome)')
+        .order('criado_em', { ascending: false })
+        .limit(8);
+
+      const listEl = document.getElementById('recent-list');
+      if (!recent || recent.length === 0) {
+        listEl.innerHTML = `<div class="empty-state"><i class="fas fa-file-invoice"></i><h3>Nenhum orçamento ainda</h3><p>Crie seu primeiro orçamento</p></div>`;
+      } else {
+        listEl.innerHTML = recent.map(o => `
+          <a href="comprovante.html?id=${o.id}" class="recent-item">
+            <div class="recent-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+            <div class="recent-info">
+              <div class="recent-title">#${o.numero || '—'} · ${o.clientes?.nome || 'Sem cliente'}</div>
+              <div class="recent-sub">${formatDate(o.criado_em)}</div>
+            </div>
+            <div class="recent-right">
+              <div class="recent-amount">${formatCurrency(o.total)}</div>
+              <div style="margin-top:4px">${statusBadge(o.status)}</div>
+            </div>
+          </a>`).join('');
+      }
+    })();
+  </script>
+</body>
+</html>

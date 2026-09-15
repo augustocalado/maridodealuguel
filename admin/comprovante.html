@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comprovante de Orçamento — Marido de Aluguel Guarulhos</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="comprovante-page">
+    <!-- Toolbar (hidden on print) -->
+    <div class="comprovante-toolbar">
+      <a href="orcamentos.html" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Voltar
+      </a>
+      <button class="btn btn-primary" onclick="window.print()">
+        <i class="fas fa-print"></i> Imprimir / Salvar PDF
+      </button>
+      <button class="btn btn-secondary" id="btn-share" onclick="shareWhatsApp()" style="display:none;">
+        <i class="fab fa-whatsapp" style="color:#25D366"></i> Compartilhar no WhatsApp
+      </button>
+      <div id="doc-loading" style="display:flex;align-items:center;gap:8px;color:var(--text-muted);margin-left:8px;">
+        <span class="spinner"></span> Carregando...
+      </div>
+    </div>
+
+    <!-- Printable Document -->
+    <div class="comprovante-doc" id="comp-doc" style="display:none;">
+
+      <!-- Header -->
+      <div class="comp-header">
+        <div class="comp-company">
+          <h1>🔧 Marido de Aluguel</h1>
+          <p>Guarulhos — SP &nbsp;|&nbsp; (11) 98060-4534 &nbsp;|&nbsp; Seg a Sáb: 08h às 20h</p>
+          <p style="margin-top:2px;font-size:11.5px;color:#888">maridodealuguelemguarulhos.com.br</p>
+        </div>
+        <div class="comp-badge">
+          <small>ORÇAMENTO</small>
+          <span class="num" id="comp-num">#—</span>
+          <small id="comp-status-badge">—</small>
+        </div>
+      </div>
+
+      <!-- Client Info -->
+      <div class="comp-section">
+        <div class="comp-section-title">Dados do Cliente</div>
+        <div class="comp-client-grid">
+          <div class="comp-info-item">
+            <label>Nome</label>
+            <span id="comp-nome">—</span>
+          </div>
+          <div class="comp-info-item">
+            <label>Telefone / WhatsApp</label>
+            <span id="comp-tel">—</span>
+          </div>
+          <div class="comp-info-item">
+            <label>E-mail</label>
+            <span id="comp-email">—</span>
+          </div>
+          <div class="comp-info-item">
+            <label>Bairro / Cidade</label>
+            <span id="comp-local">—</span>
+          </div>
+          <div class="comp-info-item">
+            <label>Endereço</label>
+            <span id="comp-end">—</span>
+          </div>
+          <div class="comp-info-item">
+            <label>Data do Orçamento</label>
+            <span id="comp-data">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items -->
+      <div class="comp-section">
+        <div class="comp-section-title">Serviços / Itens</div>
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th class="col-desc">Descrição do Serviço</th>
+              <th class="col-num">Qtd.</th>
+              <th class="col-price">Preço Unit.</th>
+              <th class="col-num">Desc.%</th>
+              <th class="col-sub">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="comp-items"></tbody>
+        </table>
+      </div>
+
+      <!-- Totals -->
+      <div class="comp-totals">
+        <div class="comp-totals-box">
+          <div class="comp-total-row"><span>Subtotal:</span><span id="comp-subtotal">—</span></div>
+          <div class="comp-total-row" id="comp-disc-row" style="display:none"><span>Desconto:</span><span id="comp-desc">—</span></div>
+          <div class="comp-total-row final"><span>TOTAL:</span><span id="comp-total">—</span></div>
+        </div>
+      </div>
+
+      <!-- Observations -->
+      <div id="comp-obs-wrap" class="comp-section" style="display:none;margin-top:20px;">
+        <div class="comp-section-title">Observações</div>
+        <div class="comp-obs" id="comp-obs-text"></div>
+      </div>
+
+      <!-- Signatures -->
+      <div class="comp-signatures">
+        <div>
+          <div class="comp-sig-line"></div>
+          <p class="comp-sig-label">Prestador de Serviço<br><strong>Marido de Aluguel Guarulhos</strong></p>
+        </div>
+        <div>
+          <div class="comp-sig-line"></div>
+          <p class="comp-sig-label">Cliente / Contratante<br><strong id="comp-sig-nome">—</strong></p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="comp-footer">
+        <strong>Marido de Aluguel em Guarulhos</strong> &nbsp;|&nbsp;
+        (11) 98060-4534 &nbsp;|&nbsp;
+        maridodealuguelemguarulhos.com.br<br>
+        Alameda Yayá — Torres de Tibagy, Guarulhos — SP, 07090-000<br>
+        <span style="font-size:10.5px;color:#bbb;margin-top:4px;display:block">
+          Este orçamento é válido por 15 dias a partir da data de emissão. Mão de obra não inclui materiais, salvo indicação contrária.
+        </span>
+      </div>
+    </div>
+
+    <div id="not-found" style="display:none;text-align:center;padding:80px 20px;">
+      <div style="font-size:60px;margin-bottom:20px;opacity:0.4">📄</div>
+      <h2 style="color:var(--text-secondary);margin-bottom:10px">Orçamento não encontrado</h2>
+      <p style="color:var(--text-muted)">Verifique o ID na URL.</p>
+      <a href="orcamentos.html" class="btn btn-primary" style="margin-top:20px">Ver todos os orçamentos</a>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const orcId = params.get('id');
+
+    const statusLabels = { rascunho:'RASCUNHO', enviado:'ENVIADO', aprovado:'APROVADO ✓', executado:'EXECUTADO ✓', cancelado:'CANCELADO' };
+
+    (async () => {
+      initSupabase();
+      // Auth check without redirect (public-ish but auth still needed)
+      const { data: { session } } = await db.auth.getSession();
+      if (!session) { window.location.href = 'index.html'; return; }
+
+      if (!orcId) { showNotFound(); return; }
+
+      const [{ data: orc }, { data: itens }] = await Promise.all([
+        db.from('orcamentos').select('*, clientes(*)').eq('id', orcId).single(),
+        db.from('orcamento_itens').select('*').eq('orcamento_id', orcId).order('id')
+      ]);
+
+      document.getElementById('doc-loading').style.display = 'none';
+
+      if (!orc) { showNotFound(); return; }
+
+      // Populate header
+      document.getElementById('comp-num').textContent = '#' + (orc.numero || '—');
+      document.getElementById('comp-status-badge').textContent = statusLabels[orc.status] || orc.status;
+
+      // Client info
+      const c = orc.clientes || {};
+      document.getElementById('comp-nome').textContent = c.nome || '—';
+      document.getElementById('comp-sig-nome').textContent = c.nome || '—';
+      document.getElementById('comp-tel').textContent = c.telefone ? formatPhone(c.telefone) : '—';
+      document.getElementById('comp-email').textContent = c.email || '—';
+      document.getElementById('comp-end').textContent = c.endereco || '—';
+      document.getElementById('comp-local').textContent = [c.bairro, c.cidade].filter(Boolean).join(' / ') || '—';
+      document.getElementById('comp-data').textContent = formatDate(orc.criado_em);
+
+      // Items
+      const items = itens || [];
+      let subtotal = 0;
+      document.getElementById('comp-items').innerHTML = items.length === 0
+        ? `<tr><td colspan="5" style="text-align:center;color:#999;padding:20px">Nenhum item</td></tr>`
+        : items.map(i => {
+            subtotal += (parseFloat(i.subtotal) || 0);
+            return `<tr>
+              <td>${i.descricao}</td>
+              <td class="col-num">${parseFloat(i.quantidade).toLocaleString('pt-BR')}</td>
+              <td class="col-price">${formatCurrency(i.preco_unitario)}</td>
+              <td class="col-num">${i.desconto ? i.desconto + '%' : '—'}</td>
+              <td class="col-sub" style="font-weight:700;text-align:right">${formatCurrency(i.subtotal)}</td>
+            </tr>`;
+          }).join('');
+
+      // Totals
+      const descPct = parseFloat(orc.desconto_geral) || 0;
+      const descVal = subtotal * descPct / 100;
+      const total = parseFloat(orc.total) || (subtotal - descVal);
+
+      document.getElementById('comp-subtotal').textContent = formatCurrency(subtotal);
+      document.getElementById('comp-total').textContent = formatCurrency(total);
+
+      if (descPct > 0) {
+        document.getElementById('comp-disc-row').style.display = 'flex';
+        document.getElementById('comp-desc').textContent = `- ${formatCurrency(descVal)} (${descPct}%)`;
+      }
+
+      // Observations
+      if (orc.observacoes) {
+        document.getElementById('comp-obs-wrap').style.display = 'block';
+        document.getElementById('comp-obs-text').textContent = orc.observacoes;
+      }
+
+      // Show share button if client has phone
+      if (c.telefone) {
+        document.getElementById('btn-share').style.display = 'flex';
+        document.getElementById('btn-share').dataset.nome = c.nome;
+        document.getElementById('btn-share').dataset.tel = c.telefone;
+        document.getElementById('btn-share').dataset.total = formatCurrency(total);
+        document.getElementById('btn-share').dataset.num = orc.numero;
+      }
+
+      document.getElementById('comp-doc').style.display = 'block';
+    })();
+
+    function showNotFound() {
+      document.getElementById('doc-loading').style.display = 'none';
+      document.getElementById('not-found').style.display = 'block';
+    }
+
+    function shareWhatsApp() {
+      const btn = document.getElementById('btn-share');
+      const tel = btn.dataset.tel.replace(/\D/g, '');
+      const nome = btn.dataset.nome;
+      const total = btn.dataset.total;
+      const num = btn.dataset.num;
+      const msg = encodeURIComponent(
+        `Olá ${nome}! 😊\n\nSegue o orçamento *#${num}* da Marido de Aluguel Guarulhos:\n\n💰 *Total: ${total}*\n\nQualquer dúvida, estou à disposição!\n\n📞 (11) 98060-4534`
+      );
+      window.open(`https://wa.me/55${tel}?text=${msg}`, '_blank');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serviços & Produtos — Admin | Marido de Aluguel</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <div id="sidebar-mount"></div>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div>
+            <div class="page-title">Serviços & Produtos</div>
+            <div class="page-subtitle">Catálogo de mão de obra e materiais</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-primary" onclick="openModal('modal-produto')">
+            <i class="fas fa-plus"></i> Novo Serviço
+          </button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div class="toolbar">
+          <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input class="form-control" type="text" id="search-input" placeholder="Buscar por nome ou descrição...">
+          </div>
+          <select class="form-control" id="filter-cat" style="width:auto;min-width:180px;">
+            <option value="">Todas as categorias</option>
+            <option>Elétrica</option>
+            <option>Hidráulica</option>
+            <option>Montagem & Fixação</option>
+            <option>Manutenção Geral</option>
+          </select>
+          <select class="form-control" id="filter-status" style="width:auto;min-width:130px;">
+            <option value="">Todos</option>
+            <option value="true">Ativos</option>
+            <option value="false">Inativos</option>
+          </select>
+        </div>
+
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div id="table-loading" class="loading-overlay"><span class="spinner"></span> Carregando...</div>
+          <div class="table-container" id="table-wrap" style="display:none">
+            <table>
+              <thead>
+                <tr>
+                  <th>Serviço / Produto</th>
+                  <th>Categoria</th>
+                  <th>Preço Mão de Obra</th>
+                  <th>Unidade</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="products-tbody"></tbody>
+            </table>
+          </div>
+          <div id="empty-state" class="empty-state" style="display:none">
+            <i class="fas fa-toolbox"></i>
+            <h3>Nenhum serviço encontrado</h3>
+            <p>Crie seu primeiro serviço ou ajuste os filtros</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Produto -->
+  <div class="modal-overlay" id="modal-produto">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-toolbox"></i> <span id="modal-title-text">Novo Serviço</span></div>
+        <button class="modal-close" onclick="closeModal('modal-produto')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="form-produto">
+        <div class="modal-body">
+          <input type="hidden" id="prod-id">
+          <div class="form-group">
+            <label class="form-label">Nome do Serviço / Produto *</label>
+            <input class="form-control" id="prod-nome" placeholder="Ex: Instalação de Chuveiro Elétrico" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descrição</label>
+            <textarea class="form-control" id="prod-desc" placeholder="Descrição detalhada do serviço..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Categoria *</label>
+              <select class="form-control" id="prod-cat" required>
+                <option value="">Selecione...</option>
+                <option>Elétrica</option>
+                <option>Hidráulica</option>
+                <option>Montagem & Fixação</option>
+                <option>Manutenção Geral</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Unidade</label>
+              <select class="form-control" id="prod-unidade">
+                <option value="serviço">Serviço</option>
+                <option value="hora">Hora</option>
+                <option value="unidade">Unidade</option>
+                <option value="metro">Metro</option>
+                <option value="m²">m²</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Preço Mão de Obra (R$) *</label>
+              <input class="form-control" type="number" id="prod-preco" placeholder="0,00" step="0.01" min="0" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select class="form-control" id="prod-ativo">
+                <option value="true">✅ Ativo</option>
+                <option value="false">❌ Inativo</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-produto')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-prod">
+            <i class="fas fa-check"></i> Salvar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin.js"></script>
+  <script>
+    let allProducts = [];
+
+    (async () => {
+      await requireAuth();
+      document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('produtos.html');
+      await loadProducts();
+
+      document.getElementById('search-input').addEventListener('input', renderTable);
+      document.getElementById('filter-cat').addEventListener('change', renderTable);
+      document.getElementById('filter-status').addEventListener('change', renderTable);
+    })();
+
+    async function loadProducts() {
+      document.getElementById('table-loading').style.display = 'flex';
+      document.getElementById('table-wrap').style.display = 'none';
+      document.getElementById('empty-state').style.display = 'none';
+
+      const { data, error } = await db.from('produtos').select('*').order('categoria').order('nome');
+      if (error) { showToast('Erro ao carregar serviços', 'error'); return; }
+      allProducts = data || [];
+      renderTable();
+    }
+
+    function renderTable() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const cat = document.getElementById('filter-cat').value;
+      const status = document.getElementById('filter-status').value;
+
+      let filtered = allProducts.filter(p => {
+        const matchSearch = !search || p.nome.toLowerCase().includes(search) || (p.descricao || '').toLowerCase().includes(search);
+        const matchCat = !cat || p.categoria === cat;
+        const matchStatus = status === '' || String(p.ativo) === status;
+        return matchSearch && matchCat && matchStatus;
+      });
+
+      document.getElementById('table-loading').style.display = 'none';
+
+      if (filtered.length === 0) {
+        document.getElementById('table-wrap').style.display = 'none';
+        document.getElementById('empty-state').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('table-wrap').style.display = 'block';
+      document.getElementById('empty-state').style.display = 'none';
+
+      const tbody = document.getElementById('products-tbody');
+      tbody.innerHTML = filtered.map(p => `
+        <tr>
+          <td>
+            <div style="font-weight:600;color:var(--text-primary)">${p.nome}</div>
+            ${p.descricao ? `<div style="font-size:12px;color:var(--text-muted);margin-top:2px">${p.descricao.substring(0,80)}${p.descricao.length > 80 ? '…' : ''}</div>` : ''}
+          </td>
+          <td><span class="badge badge-cat">${p.categoria || '—'}</span></td>
+          <td><span class="fw-bold text-accent">${formatCurrency(p.preco_unitario)}</span></td>
+          <td><span style="color:var(--text-muted);font-size:12.5px">${p.unidade || 'serviço'}</span></td>
+          <td><span class="badge badge-${p.ativo ? 'ativo' : 'inativo'}">${p.ativo ? 'Ativo' : 'Inativo'}</span></td>
+          <td>
+            <div class="actions-cell">
+              <button class="btn btn-secondary btn-icon btn-sm" onclick="editProduct('${p.id}')" title="Editar">
+                <i class="fas fa-pen"></i>
+              </button>
+              <button class="btn btn-danger btn-icon btn-sm" onclick="deleteProduct('${p.id}','${p.nome.replace(/'/g,'\\\'')}')" title="Excluir">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+
+    function editProduct(id) {
+      const p = allProducts.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('modal-title-text').textContent = 'Editar Serviço';
+      document.getElementById('prod-id').value = p.id;
+      document.getElementById('prod-nome').value = p.nome;
+      document.getElementById('prod-desc').value = p.descricao || '';
+      document.getElementById('prod-cat').value = p.categoria || '';
+      document.getElementById('prod-preco').value = p.preco_unitario;
+      document.getElementById('prod-unidade').value = p.unidade || 'serviço';
+      document.getElementById('prod-ativo').value = String(p.ativo);
+      openModal('modal-produto');
+    }
+
+    document.getElementById('form-produto').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-prod');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Salvando...';
+
+      const id = document.getElementById('prod-id').value;
+      const payload = {
+        nome: document.getElementById('prod-nome').value.trim(),
+        descricao: document.getElementById('prod-desc').value.trim() || null,
+        categoria: document.getElementById('prod-cat').value,
+        preco_unitario: parseFloat(document.getElementById('prod-preco').value) || 0,
+        unidade: document.getElementById('prod-unidade').value,
+        ativo: document.getElementById('prod-ativo').value === 'true'
+      };
+
+      let error;
+      if (id) {
+        ({ error } = await db.from('produtos').update(payload).eq('id', id));
+      } else {
+        ({ error } = await db.from('produtos').insert(payload));
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check"></i> Salvar';
+
+      if (error) { showToast('Erro ao salvar: ' + error.message, 'error'); return; }
+      showToast(id ? 'Serviço atualizado!' : 'Serviço criado!', 'success');
+      closeModal('modal-produto');
+      document.getElementById('prod-id').value = '';
+      document.getElementById('modal-title-text').textContent = 'Novo Serviço';
+      document.getElementById('form-produto').reset();
+      await loadProducts();
+    });
+
+    async function deleteProduct(id, nome) {
+      if (!confirm(`Excluir "${nome}"?\nEssa ação não pode ser desfeita.`)) return;
+      const { error } = await db.from('produtos').delete().eq('id', id);
+      if (error) { showToast('Erro ao excluir', 'error'); return; }
+      showToast('Serviço excluído.', 'warning');
+      await loadProducts();
+    }
+
+    // Reset modal on close
+    document.getElementById('modal-produto').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        document.getElementById('prod-id').value = '';
+        document.getElementById('modal-title-text').textContent = 'Novo Serviço';
+        document.getElementById('form-produto').reset();
+      }
+    });
+    document.querySelector('[onclick="openModal(\'modal-produto\')"]').addEventListener('click', () => {
+      document.getElementById('prod-id').value = '';
+      document.getElementById('modal-title-text').textContent = 'Novo Serviço';
+      document.getElementById('form-produto').reset();
+    });
+  </script>
+</body>
+</html>

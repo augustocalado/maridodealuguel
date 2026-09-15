@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Novo Orçamento — Admin | Marido de Aluguel</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="admin.css">
+  <style>
+    .items-builder { overflow-x: auto; }
+    .col-desc-input { min-width: 200px; }
+    .col-qty-input { width: 70px; }
+    .col-price-input { width: 100px; }
+    .col-disc-input { width: 65px; }
+    .col-sub { min-width: 100px; }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <div id="sidebar-mount"></div>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div>
+            <div class="page-title" id="page-title">Novo Orçamento</div>
+            <div class="page-subtitle">Preencha os dados e adicione os serviços</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <a href="orcamentos.html" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Voltar
+          </a>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <form id="form-orcamento">
+          <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;">
+
+            <!-- Left Column -->
+            <div style="display:flex;flex-direction:column;gap:20px;">
+
+              <!-- Header Info -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title"><i class="fas fa-user"></i> Dados do Orçamento</div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Cliente *</label>
+                    <select class="form-control" id="orc-cliente" required>
+                      <option value="">Selecione o cliente...</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-control" id="orc-status">
+                      <option value="rascunho">Rascunho</option>
+                      <option value="enviado">Enviado</option>
+                      <option value="aprovado">Aprovado</option>
+                      <option value="executado">Executado</option>
+                      <option value="cancelado">Cancelado</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group mb-0">
+                  <label class="form-label">Observações</label>
+                  <textarea class="form-control" id="orc-obs" placeholder="Detalhes, condições, prazo de execução..." style="min-height:70px;"></textarea>
+                </div>
+              </div>
+
+              <!-- Items Builder -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title"><i class="fas fa-list-check"></i> Serviços / Itens</div>
+                  <span style="font-size:12px;color:var(--text-muted)">Selecione do catálogo ou preencha manualmente</span>
+                </div>
+
+                <div class="items-builder">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style="min-width:220px">Serviço / Descrição</th>
+                        <th style="width:70px">Qtd.</th>
+                        <th style="width:110px">Preço Unit.</th>
+                        <th style="width:70px">Desc.%</th>
+                        <th style="width:110px">Subtotal</th>
+                        <th style="width:40px"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="items-tbody"></tbody>
+                  </table>
+                  <button type="button" class="add-item-btn" onclick="addItem()" style="width:100%;">
+                    <i class="fas fa-plus-circle"></i> Adicionar Serviço / Item
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Column: Summary -->
+            <div style="position:sticky;top:80px;display:flex;flex-direction:column;gap:16px;">
+              <div class="summary-box">
+                <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:14px;text-transform:uppercase;letter-spacing:0.5px;">Resumo</div>
+                <div class="summary-row"><span>Subtotal</span><span id="sum-subtotal">R$ 0,00</span></div>
+                <div class="summary-row" style="align-items:center;gap:8px;">
+                  <span>Desconto Geral</span>
+                  <div style="display:flex;align-items:center;gap:4px;">
+                    <input type="number" id="orc-desconto" value="0" min="0" max="100" step="1"
+                      style="width:55px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text-primary);font-size:13px;outline:none;"
+                      oninput="calcTotal()">
+                    <span style="color:var(--text-muted);font-size:13px">%</span>
+                  </div>
+                </div>
+                <div class="summary-row"><span>Valor Desconto</span><span id="sum-desconto" style="color:var(--danger)">- R$ 0,00</span></div>
+                <div class="summary-row total">
+                  <span>TOTAL</span>
+                  <span id="sum-total">R$ 0,00</span>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg" id="btn-salvar" style="width:100%;justify-content:center;">
+                <i class="fas fa-floppy-disk"></i> Salvar Orçamento
+              </button>
+              <a href="orcamentos.html" class="btn btn-secondary" style="width:100%;justify-content:center;">
+                Cancelar
+              </a>
+
+              <!-- Comprovante link (shown after save) -->
+              <div id="comp-link-wrap" style="display:none;">
+                <a id="comp-link" href="#" class="btn btn-success" style="width:100%;justify-content:center;" target="_blank">
+                  <i class="fas fa-print"></i> Ver / Imprimir Comprovante
+                </a>
+              </div>
+            </div>
+          </div>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin.js"></script>
+  <script>
+    let produtos = [];
+    let orcamentoId = null;
+    let itemCount = 0;
+
+    const params = new URLSearchParams(window.location.search);
+    const editId = params.get('id');
+    const preCliente = params.get('cliente');
+
+    (async () => {
+      await requireAuth();
+      document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('orcamentos.html');
+
+      // Load products catalog
+      const { data: prods } = await db.from('produtos').select('*').eq('ativo', true).order('categoria').order('nome');
+      produtos = prods || [];
+
+      // Load clients
+      const { data: clients } = await db.from('clientes').select('id, nome').order('nome');
+      const sel = document.getElementById('orc-cliente');
+      (clients || []).forEach(c => {
+        const opt = new Option(c.nome, c.id);
+        sel.appendChild(opt);
+      });
+
+      // Pre-select client from URL
+      if (preCliente) sel.value = preCliente;
+
+      // Load existing quote (edit mode)
+      if (editId) {
+        document.getElementById('page-title').textContent = 'Editar Orçamento';
+        orcamentoId = editId;
+        await loadExistingQuote(editId);
+        document.getElementById('comp-link-wrap').style.display = 'block';
+        document.getElementById('comp-link').href = `comprovante.html?id=${editId}`;
+      } else {
+        // Start with 2 empty items
+        addItem();
+        addItem();
+      }
+
+      // Watch discount
+      document.getElementById('orc-desconto').addEventListener('input', calcTotal);
+    })();
+
+    async function loadExistingQuote(id) {
+      const [{ data: orc }, { data: itens }] = await Promise.all([
+        db.from('orcamentos').select('*').eq('id', id).single(),
+        db.from('orcamento_itens').select('*').eq('orcamento_id', id).order('id')
+      ]);
+
+      if (!orc) { showToast('Orçamento não encontrado', 'error'); return; }
+      document.getElementById('orc-cliente').value = orc.cliente_id || '';
+      document.getElementById('orc-status').value = orc.status;
+      document.getElementById('orc-obs').value = orc.observacoes || '';
+      document.getElementById('orc-desconto').value = orc.desconto_geral || 0;
+
+      (itens || []).forEach(item => {
+        addItem(item.descricao, item.quantidade, item.preco_unitario, item.desconto);
+      });
+
+      if (itens.length === 0) addItem();
+      calcTotal();
+    }
+
+    function addItem(desc = '', qty = 1, price = 0, disc = 0) {
+      itemCount++;
+      const idx = itemCount;
+
+      // Build product options
+      const catGroups = {};
+      produtos.forEach(p => {
+        if (!catGroups[p.categoria]) catGroups[p.categoria] = [];
+        catGroups[p.categoria].push(p);
+      });
+
+      let prodOpts = `<option value="">— Catálogo —</option>`;
+      Object.entries(catGroups).forEach(([cat, prods]) => {
+        prodOpts += `<optgroup label="${cat}">`;
+        prods.forEach(p => {
+          prodOpts += `<option value="${p.id}" data-price="${p.preco_unitario}" data-desc="${p.nome}">${p.nome} (${formatCurrency(p.preco_unitario)}/${p.unidade})</option>`;
+        });
+        prodOpts += `</optgroup>`;
+      });
+
+      const tr = document.createElement('tr');
+      tr.id = `item-row-${idx}`;
+      tr.innerHTML = `
+        <td>
+          <select class="prod-select" onchange="onProdSelect(${idx},this)" style="width:100%;margin-bottom:5px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text-primary);font-family:inherit;font-size:12.5px;outline:none;">
+            ${prodOpts}
+          </select>
+          <input class="col-desc-input" type="text" id="desc-${idx}" value="${desc}"
+            placeholder="Ou descreva o serviço..."
+            style="width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;padding:7px 9px;color:var(--text-primary);font-size:13px;outline:none;" required>
+        </td>
+        <td><input type="number" id="qty-${idx}" value="${qty}" min="0.01" step="0.01" class="col-qty-input" oninput="calcRow(${idx})" style="text-align:center;"></td>
+        <td><input type="number" id="price-${idx}" value="${price}" min="0" step="0.01" class="col-price-input" oninput="calcRow(${idx})" style="text-align:right;"></td>
+        <td><input type="number" id="disc-${idx}" value="${disc}" min="0" max="100" step="1" class="col-disc-input" oninput="calcRow(${idx})" style="text-align:center;"></td>
+        <td class="subtotal-cell" id="sub-${idx}">R$ 0,00</td>
+        <td>
+          <button type="button" onclick="removeItem(${idx})" class="btn btn-danger btn-icon btn-sm" title="Remover">
+            <i class="fas fa-times"></i>
+          </button>
+        </td>`;
+
+      document.getElementById('items-tbody').appendChild(tr);
+
+      // Style inputs
+      tr.querySelectorAll('input[type=number]').forEach(inp => {
+        Object.assign(inp.style, {
+          width: '100%', background: 'var(--bg-input)', border: '1px solid var(--border)',
+          borderRadius: '6px', padding: '7px 9px', color: 'var(--text-primary)',
+          fontFamily: 'inherit', fontSize: '13px', outline: 'none'
+        });
+      });
+
+      if (price > 0 || disc > 0) calcRow(idx);
+    }
+
+    function onProdSelect(idx, sel) {
+      const opt = sel.options[sel.selectedIndex];
+      if (!opt.value) return;
+      document.getElementById(`desc-${idx}`).value = opt.dataset.desc;
+      document.getElementById(`price-${idx}`).value = opt.dataset.price;
+      calcRow(idx);
+      sel.value = ''; // reset selector after picking
+    }
+
+    function calcRow(idx) {
+      const qty   = parseFloat(document.getElementById(`qty-${idx}`)?.value) || 0;
+      const price = parseFloat(document.getElementById(`price-${idx}`)?.value) || 0;
+      const disc  = parseFloat(document.getElementById(`disc-${idx}`)?.value) || 0;
+      const sub = qty * price * (1 - disc / 100);
+      const el = document.getElementById(`sub-${idx}`);
+      if (el) el.textContent = formatCurrency(sub);
+      calcTotal();
+    }
+
+    function removeItem(idx) {
+      document.getElementById(`item-row-${idx}`)?.remove();
+      calcTotal();
+    }
+
+    function calcTotal() {
+      let subtotal = 0;
+      document.querySelectorAll('.subtotal-cell').forEach(cell => {
+        subtotal += parseCurrency(cell.textContent);
+      });
+      const discPct = parseFloat(document.getElementById('orc-desconto').value) || 0;
+      const discVal = subtotal * discPct / 100;
+      const total = subtotal - discVal;
+
+      document.getElementById('sum-subtotal').textContent = formatCurrency(subtotal);
+      document.getElementById('sum-desconto').textContent = '- ' + formatCurrency(discVal);
+      document.getElementById('sum-total').textContent = formatCurrency(total);
+    }
+
+    function getItems() {
+      const rows = document.querySelectorAll('#items-tbody tr');
+      const items = [];
+      rows.forEach(row => {
+        const id = row.id.replace('item-row-', '');
+        const desc  = document.getElementById(`desc-${id}`)?.value?.trim();
+        const qty   = parseFloat(document.getElementById(`qty-${id}`)?.value) || 0;
+        const price = parseFloat(document.getElementById(`price-${id}`)?.value) || 0;
+        const disc  = parseFloat(document.getElementById(`disc-${id}`)?.value) || 0;
+        const sub   = qty * price * (1 - disc / 100);
+        if (desc) items.push({ descricao: desc, quantidade: qty, preco_unitario: price, desconto: disc, subtotal: sub });
+      });
+      return items;
+    }
+
+    document.getElementById('form-orcamento').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn-salvar');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Salvando...';
+
+      const clienteId = document.getElementById('orc-cliente').value;
+      const status    = document.getElementById('orc-status').value;
+      const obs       = document.getElementById('orc-obs').value.trim() || null;
+      const descGeral = parseFloat(document.getElementById('orc-desconto').value) || 0;
+      const items     = getItems();
+
+      if (items.length === 0) {
+        showToast('Adicione ao menos 1 serviço/item', 'warning');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-floppy-disk"></i> Salvar Orçamento';
+        return;
+      }
+
+      let subtotal = items.reduce((s, i) => s + i.subtotal, 0);
+      const total = subtotal * (1 - descGeral / 100);
+
+      const orcPayload = {
+        cliente_id: clienteId || null,
+        status, observacoes: obs,
+        desconto_geral: descGeral,
+        total,
+        atualizado_em: new Date().toISOString()
+      };
+
+      let orcId = orcamentoId;
+      let error;
+
+      if (orcId) {
+        ({ error } = await db.from('orcamentos').update(orcPayload).eq('id', orcId));
+        if (!error) await db.from('orcamento_itens').delete().eq('orcamento_id', orcId);
+      } else {
+        const { data, error: e } = await db.from('orcamentos').insert(orcPayload).select().single();
+        error = e;
+        if (data) orcId = data.id;
+      }
+
+      if (error || !orcId) {
+        showToast('Erro ao salvar orçamento: ' + (error?.message || 'Erro desconhecido'), 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-floppy-disk"></i> Salvar Orçamento';
+        return;
+      }
+
+      // Insert items
+      const itensPayload = items.map(i => ({ ...i, orcamento_id: orcId }));
+      const { error: eItems } = await db.from('orcamento_itens').insert(itensPayload);
+      if (eItems) { showToast('Orçamento salvo mas houve erro nos itens', 'warning'); }
+
+      orcamentoId = orcId;
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-floppy-disk"></i> Salvar Orçamento';
+      showToast('Orçamento salvo com sucesso!', 'success');
+
+      // Show comprovante link
+      document.getElementById('comp-link-wrap').style.display = 'block';
+      document.getElementById('comp-link').href = `comprovante.html?id=${orcId}`;
+
+      // Update URL without reload
+      history.replaceState(null, '', `orcamento-novo.html?id=${orcId}`);
+    });
+  </script>
+</body>
+</html>
