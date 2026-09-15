@@ -131,6 +131,7 @@ function getSidebarHTML(active = '') {
   const items = [
     { href: 'dashboard.html', icon: 'fa-gauge-high', label: 'Dashboard' },
     { href: 'orcamentos.html', icon: 'fa-file-invoice-dollar', label: 'Orçamentos' },
+    { href: 'ordens-servico.html', icon: 'fa-clipboard-list', label: 'Ordens de Serviço' },
     { href: 'agenda.html', icon: 'fa-calendar-days', label: 'Agenda' },
     { href: 'clientes.html', icon: 'fa-users', label: 'Clientes' },
     { href: 'produtos.html', icon: 'fa-toolbox', label: 'Serviços & Produtos' },

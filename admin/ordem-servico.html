@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ordem de Serviço (O.S.) — Marido de Aluguel</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0F172A;
+      --accent: #F59E0B;
+      --border: #CBD5E1;
+      --text: #1E293B;
+      --muted: #64748B;
+      --bg: #F8FAFC;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body {
+      background: #0B0F19;
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .os-toolbar {
+      max-width: 860px;
+      width: 100%;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: #FFB800; color: #000; }
+    .btn-primary:hover { background: #e0a300; }
+    .btn-secondary { background: #1E293B; color: #E2E8F0; border: 1px solid #334155; }
+    .btn-secondary:hover { background: #334155; }
+    .btn-success { background: #10B981; color: #fff; }
+    .btn-success:hover { background: #059669; }
+
+    /* Folha O.S. A4 */
+    .os-sheet {
+      background: #FFF;
+      max-width: 860px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      padding: 36px 40px;
+      border: 1px solid #E2E8F0;
+      position: relative;
+    }
+
+    .os-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 18px;
+      margin-bottom: 20px;
+    }
+    .os-brand h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .os-brand p {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+    .os-number-badge {
+      text-align: right;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 16px;
+    }
+    .os-number-badge .label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+    }
+    .os-number-badge .num {
+      font-size: 22px;
+      font-weight: 800;
+      color: #D97706;
+      display: block;
+    }
+    .os-number-badge .status {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    .status-executado { background: #DCFCE7; color: #166534; }
+    .status-aprovado { background: #FEF3C7; color: #92400E; }
+    .status-andamento { background: #DBEAFE; color: #1E40AF; }
+
+    .section-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--primary);
+      background: #F1F5F9;
+      padding: 6px 12px;
+      border-left: 4px solid var(--accent);
+      margin-bottom: 12px;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .info-box {
+      font-size: 12.5px;
+      background: #FFF;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+    .info-box strong {
+      display: block;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+    .info-box.full {
+      grid-column: 1 / -1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th {
+      background: #F8FAFC;
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+    }
+    td {
+      padding: 9px 10px;
+      font-size: 12.5px;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .check-box-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      border: 1px dashed var(--border);
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: #FAFBFD;
+    }
+    .check-box-item input[type=checkbox] {
+      width: 16px;
+      height: 16px;
+    }
+
+    .notes-box {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      min-height: 70px;
+      font-size: 12px;
+      color: var(--text);
+      background: #FFF;
+      margin-bottom: 24px;
+    }
+
+    .signatures-block {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-top: 24px;
+      padding-top: 8px;
+    }
+    .sig-field {
+      border-top: 1px solid #475569;
+      text-align: center;
+      padding-top: 6px;
+      font-size: 12px;
+    }
+    .sig-field small {
+      display: block;
+      color: var(--muted);
+      font-size: 10.5px;
+    }
+
+    @media print {
+      body { background: #FFF; padding: 0; }
+      .os-toolbar { display: none; }
+      .os-sheet { box-shadow: none; border: none; padding: 15px; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="os-toolbar">
+    <a href="orcamentos.html" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Voltar
+    </a>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="btn btn-success" id="btn-wa">
+        <i class="fab fa-whatsapp"></i> Enviar O.S. no WhatsApp
+      </button>
+      <button class="btn btn-primary" onclick="window.print()">
+        <i class="fas fa-print"></i> Imprimir O.S. (A4)
+      </button>
+      <button class="btn btn-secondary" id="btn-concluir-os" onclick="concluirOrdemServico()" style="color:#10B981;">
+        <i class="fas fa-check-double"></i> Concluir O.S.
+      </button>
+    </div>
+  </div>
+
+  <div class="os-sheet" id="os-document">
+    <!-- Header -->
+    <div class="os-header">
+      <div class="os-brand">
+        <h1><span>🔧</span> <span id="os-empresa-nome">Marido de Aluguel Profissional</span></h1>
+        <p id="os-empresa-info">Atendimento Técnico Residencial & Comercial • Reparos e Instalações</p>
+        <p style="font-size:11.5px;color:var(--muted);margin-top:2px;">
+          WhatsApp: <strong id="os-empresa-whats">(11) 97793-1818</strong> | Região: <span id="os-empresa-cidade">Guarulhos e Região SP</span>
+        </p>
+      </div>
+      <div class="os-number-badge">
+        <span class="label">Ordem de Serviço</span>
+        <span class="num" id="os-numero">OS #000</span>
+        <span class="status status-aprovado" id="os-status-tag">Agendada</span>
+      </div>
+    </div>
+
+    <!-- Dados do Atendimento -->
+    <div class="section-title"><i class="fas fa-user"></i> 1. Dados do Cliente e Local de Atendimento</div>
+    <div class="info-grid">
+      <div class="info-box">
+        <strong>Cliente / Solicitante</strong>
+        <span id="os-cliente-nome">Carregando...</span>
+      </div>
+      <div class="info-box">
+        <strong>Telefone / WhatsApp</strong>
+        <span id="os-cliente-tel">---</span>
+      </div>
+      <div class="info-box">
+        <strong>Data & Horário Previsto</strong>
+        <span id="os-agendamento" style="font-weight:700;color:#D97706;">---</span>
+      </div>
+      <div class="info-box full">
+        <strong>Endereço de Execução (Rua, Número, Bairro, Cidade)</strong>
+        <span id="os-cliente-end">---</span>
+      </div>
+    </div>
+
+    <!-- Escopo dos Serviços -->
+    <div class="section-title"><i class="fas fa-toolbox"></i> 2. Serviços Solicitados & Mão de Obra</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 40px; text-align: center;">Item</th>
+          <th>Descrição Técnica do Serviço</th>
+          <th style="width: 60px; text-align: center;">Qtd.</th>
+          <th style="width: 110px; text-align: right;">Valor Unit.</th>
+          <th style="width: 110px; text-align: right;">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody id="os-itens-tbody">
+        <tr><td colspan="5" style="text-align:center;">Carregando itens da OS...</td></tr>
+      </tbody>
+      <tfoot>
+        <tr style="background:#F8FAFC;font-weight:700;">
+          <td colspan="4" style="text-align:right;text-transform:uppercase;">Valor Total dos Serviços:</td>
+          <td style="text-align:right;font-size:14px;color:#0F172A;" id="os-total-val">R$ 0,00</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- Checklist Técnico -->
+    <div class="section-title"><i class="fas fa-list-check"></i> 3. Checklist Técnico de Execução & Testes</div>
+    <div class="checklist-grid" id="os-checklist-container">
+      <div class="check-box-item"><input type="checkbox" checked> <span>Verificação de rede elétrica / hidráulica antes de iniciar</span></div>
+      <div class="check-box-item"><input type="checkbox" checked> <span>Teste de nivelamento e fixação estrutural</span></div>
+      <div class="check-box-item"><input type="checkbox" checked> <span>Limpeza e organização do ambiente após o trabalho</span></div>
+      <div class="check-box-item"><input type="checkbox" checked> <span>Teste prático de funcionamento na presença do cliente</span></div>
+    </div>
+
+    <!-- Diagnóstico e Observações -->
+    <div class="section-title"><i class="fas fa-clipboard"></i> 4. Observações Técnicas & Materiais Utilizados</div>
+    <div class="notes-box" id="os-observacoes">
+      Nenhuma observação adicional cadastrada no orçamento.
+    </div>
+
+    <!-- Autorização e Entrega -->
+    <div style="font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:20px;">
+      Declaro que os serviços discriminados nesta Ordem de Serviço foram executados e conferidos em perfeito estado de funcionamento e acabamento, estando de acordo com o solicitado.
+    </div>
+
+    <div class="signatures-block">
+      <div class="sig-field">
+        <strong id="os-sig-tecnico">Técnico Responsável</strong>
+        <small>Marido de Aluguel Profissional</small>
+      </div>
+      <div class="sig-field">
+        <strong id="os-sig-cliente">Assinatura do Cliente</strong>
+        <small>Recebido e Aprovado em: _____/_____/_________</small>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/admin/supabase-config.js"></script>
+  <script src="/admin/admin.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const orcId = params.get('id');
+    let currentOrc = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      initSupabase();
+      if (!orcId) {
+        alert('Identificador de Ordem de Serviço não informado.');
+        window.location.href = 'orcamentos.html';
+        return;
+      }
+
+      // Load config from localStorage
+      const cfg = JSON.parse(localStorage.getItem('mda_empresa_config') || '{}');
+      if (cfg.nome) {
+        document.getElementById('os-empresa-nome').textContent = cfg.nome;
+        document.getElementById('os-sig-tecnico').textContent = cfg.nome;
+      }
+      if (cfg.whatsapp) document.getElementById('os-empresa-whats').textContent = cfg.whatsapp;
+      if (cfg.cidade) document.getElementById('os-empresa-cidade').textContent = cfg.cidade;
+
+      await carregarOrdemServico(orcId);
+    });
+
+    async function carregarOrdemServico(id) {
+      const [{ data: orc }, { data: itens }, { data: checks }] = await Promise.all([
+        db.from('orcamentos').select('*, clientes(*)').eq('id', id).single(),
+        db.from('orcamento_itens').select('*').eq('orcamento_id', id),
+        db.from('orcamento_checklists').select('*').eq('orcamento_id', id)
+      ]);
+
+      if (!orc) {
+        alert('Ordem de Serviço não encontrada.');
+        return;
+      }
+
+      currentOrc = orc;
+      const cliente = orc.clientes || {};
+
+      document.getElementById('os-numero').textContent = `OS #${orc.numero || '—'}`;
+      document.getElementById('os-cliente-nome').textContent = cliente.nome || 'Cliente Não Identificado';
+      document.getElementById('os-sig-cliente').textContent = cliente.nome || 'Assinatura do Cliente';
+      document.getElementById('os-cliente-tel').textContent = formatPhone(cliente.telefone);
+      
+      const fullEnd = [cliente.endereco, cliente.bairro, cliente.cidade].filter(Boolean).join(' - ') || 'Endereço não informado';
+      document.getElementById('os-cliente-end').textContent = fullEnd;
+
+      if (orc.data_agendamento) {
+        const d = new Date(orc.data_agendamento);
+        document.getElementById('os-agendamento').textContent = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      } else {
+        document.getElementById('os-agendamento').textContent = 'A Definir / Imediato';
+      }
+
+      // Status tag
+      const statusTag = document.getElementById('os-status-tag');
+      if (orc.status === 'executado') {
+        statusTag.textContent = 'Executada / Concluída';
+        statusTag.className = 'status status-executado';
+        document.getElementById('btn-concluir-os').style.display = 'none';
+      } else {
+        statusTag.textContent = 'Aberta / Em Execução';
+        statusTag.className = 'status status-andamento';
+      }
+
+      if (orc.observacoes) {
+        document.getElementById('os-observacoes').textContent = orc.observacoes;
+      }
+
+      document.getElementById('os-total-val').textContent = formatCurrency(orc.total);
+
+      // Render Itens
+      const tbody = document.getElementById('os-itens-tbody');
+      if (!itens || itens.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Nenhum serviço discriminado.</td></tr>`;
+      } else {
+        tbody.innerHTML = itens.map((i, index) => `
+          <tr>
+            <td style="text-align:center;color:var(--muted);">${index + 1}</td>
+            <td><strong>${escapeHtml(i.descricao)}</strong></td>
+            <td style="text-align:center;">${i.quantidade}</td>
+            <td style="text-align:right;">${formatCurrency(i.preco_unitario)}</td>
+            <td style="text-align:right;font-weight:600;">${formatCurrency(i.subtotal)}</td>
+          </tr>
+        `).join('');
+      }
+
+      // Render Checklists
+      if (checks && checks.length > 0) {
+        const checkContainer = document.getElementById('os-checklist-container');
+        checkContainer.innerHTML = checks.map(c => `
+          <div class="check-box-item">
+            <input type="checkbox" ${c.concluido ? 'checked' : ''}>
+            <span>${escapeHtml(c.item_texto)}</span>
+          </div>
+        `).join('');
+      }
+
+      // WhatsApp Button
+      const cleanPhone = (cliente.telefone || '').replace(/\D/g, '');
+      const waBtn = document.getElementById('btn-wa');
+      if (cleanPhone) {
+        const msg = `Olá ${cliente.nome}! Segue a Ordem de Serviço OS #${orc.numero} referente aos serviços agendados para sua residência.`;
+        waBtn.onclick = () => {
+          window.open(`https://wa.me/55${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+      } else {
+        waBtn.style.display = 'none';
+      }
+    }
+
+    async function concluirOrdemServico() {
+      if (!confirm('Deseja marcar esta Ordem de Serviço como CONCLUÍDA?')) return;
+      const { error } = await db.from('orcamentos').update({
+        status: 'executado',
+        atualizado_em: new Date().toISOString()
+      }).eq('id', orcId);
+
+      if (error) {
+        alert('Erro ao concluir O.S.: ' + error.message);
+        return;
+      }
+
+      alert('Ordem de Serviço concluída com sucesso!');
+      window.location.reload();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>

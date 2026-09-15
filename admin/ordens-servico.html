@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ordens de Serviço — Admin | Marido de Aluguel</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <div id="sidebar-mount"></div>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div>
+            <div class="page-title">Ordens de Serviço (O.S.)</div>
+            <div class="page-subtitle">Gestão operacional de execução, checklists e conclusões técnicas</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <a href="orcamento-novo.html" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Nova Ordem de Serviço
+          </a>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <!-- Status Tabs -->
+        <div class="tabs" id="os-tabs">
+          <button class="tab active" data-status="">Todas</button>
+          <button class="tab" data-status="abertas">Em Andamento / Abertas</button>
+          <button class="tab" data-status="executado">Concluídas</button>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-wrap flex-1">
+            <i class="fas fa-search"></i>
+            <input class="form-control" type="text" id="search-input" placeholder="Buscar por número de OS, cliente, bairro...">
+          </div>
+        </div>
+
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div id="table-loading" class="loading-overlay"><span class="spinner"></span> Carregando ordens de serviço...</div>
+          <div class="table-container" id="table-wrap" style="display:none;">
+            <table>
+              <thead>
+                <tr>
+                  <th>O.S. #</th>
+                  <th>Cliente & Endereço</th>
+                  <th>Data Agendada</th>
+                  <th>Serviços</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th style="width: 170px; text-align: right;">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="os-tbody"></tbody>
+            </table>
+          </div>
+
+          <div id="empty-state" class="empty-state" style="display:none;">
+            <i class="fas fa-clipboard-check"></i>
+            <h3>Nenhuma Ordem de Serviço encontrada</h3>
+            <p>Crie um orçamento e marque o agendamento para gerar uma O.S.</p>
+            <a href="orcamento-novo.html" class="btn btn-primary" style="margin-top:14px;">
+              <i class="fas fa-plus"></i> Criar Nova O.S.
+            </a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/admin/supabase-config.js"></script>
+  <script src="/admin/admin.js"></script>
+  <script>
+    let allOrders = [];
+    let activeFilter = '';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('ordens-servico.html');
+      const session = await requireAuth();
+      if (!session) return;
+
+      await loadOrdensServico();
+
+      document.getElementById('os-tabs').addEventListener('click', (e) => {
+        if (!e.target.classList.contains('tab')) return;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        activeFilter = e.target.dataset.status;
+        renderTable();
+      });
+
+      document.getElementById('search-input').addEventListener('input', renderTable);
+    });
+
+    async function loadOrdensServico() {
+      document.getElementById('table-loading').style.display = 'flex';
+      document.getElementById('table-wrap').style.display = 'none';
+      document.getElementById('empty-state').style.display = 'none';
+
+      const { data, error } = await db.from('orcamentos')
+        .select(`
+          id, numero, status, total, data_agendamento, criado_em, observacoes,
+          clientes ( id, nome, telefone, endereco, bairro, cidade ),
+          orcamento_itens ( descricao )
+        `)
+        .order('criado_em', { ascending: false });
+
+      document.getElementById('table-loading').style.display = 'none';
+
+      if (error) {
+        showToast('Erro ao carregar Ordens de Serviço', 'error');
+        return;
+      }
+
+      allOrders = data || [];
+      renderTable();
+    }
+
+    function renderTable() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+
+      const filtered = allOrders.filter(o => {
+        let matchStatus = true;
+        if (activeFilter === 'abertas') {
+          matchStatus = o.status !== 'executado' && o.status !== 'cancelado';
+        } else if (activeFilter === 'executado') {
+          matchStatus = o.status === 'executado';
+        }
+
+        const cliente = o.clientes || {};
+        const matchSearch = !search ||
+          String(o.numero || '').includes(search) ||
+          (cliente.nome || '').toLowerCase().includes(search) ||
+          (cliente.bairro || '').toLowerCase().includes(search);
+
+        return matchStatus && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        document.getElementById('table-wrap').style.display = 'none';
+        document.getElementById('empty-state').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('table-wrap').style.display = 'block';
+      document.getElementById('empty-state').style.display = 'none';
+
+      document.getElementById('os-tbody').innerHTML = filtered.map(o => {
+        const c = o.clientes || {};
+        const descItens = (o.orcamento_itens || []).map(i => i.descricao).join(', ') || 'Reparos gerais';
+        const dataAgenda = o.data_agendamento 
+          ? new Date(o.data_agendamento).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+          : 'A definir';
+
+        let statusBadgeHtml = '';
+        if (o.status === 'executado') {
+          statusBadgeHtml = `<span class="badge badge-aprovado"><i class="fas fa-check"></i> Concluída</span>`;
+        } else if (o.status === 'cancelado') {
+          statusBadgeHtml = `<span class="badge badge-cancelado">Cancelada</span>`;
+        } else {
+          statusBadgeHtml = `<span class="badge badge-enviado"><i class="fas fa-clock"></i> Em Andamento</span>`;
+        }
+
+        return `
+          <tr>
+            <td><strong class="text-accent" style="font-size:14px;">OS #${o.numero || '—'}</strong></td>
+            <td>
+              <div style="font-weight:600;color:var(--text-primary);">${escapeHtml(c.nome || 'Cliente não identificado')}</div>
+              <div style="font-size:11.5px;color:var(--text-muted);">${escapeHtml([c.bairro, c.cidade].filter(Boolean).join(', ') || formatPhone(c.telefone))}</div>
+            </td>
+            <td style="font-size:12.5px;color:var(--text-secondary);">
+              <i class="fas fa-calendar-day" style="color:var(--accent);margin-right:4px;"></i> ${dataAgenda}
+            </td>
+            <td style="font-size:12.5px;color:var(--text-secondary);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              ${escapeHtml(descItens)}
+            </td>
+            <td><strong style="font-size:14px;color:var(--text-primary);">${formatCurrency(o.total)}</strong></td>
+            <td>${statusBadgeHtml}</td>
+            <td style="text-align:right;">
+              <div class="table-actions" style="justify-content:flex-end;">
+                <a href="ordem-servico.html?id=${o.id}" class="btn btn-secondary btn-sm" title="Abrir / Imprimir Ordem de Serviço" target="_blank" style="color:var(--accent);">
+                  <i class="fas fa-clipboard-list"></i> O.S.
+                </a>
+                <a href="garantia.html?id=${o.id}" class="btn btn-secondary btn-sm" title="Certificado de Garantia" target="_blank">
+                  <i class="fas fa-shield-halved"></i>
+                </a>
+                <a href="orcamento-novo.html?id=${o.id}" class="btn btn-secondary btn-icon btn-sm" title="Editar">
+                  <i class="fas fa-pen"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
