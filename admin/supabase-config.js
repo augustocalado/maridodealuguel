@@ -8,6 +8,7 @@
 
 const SUPABASE_URL = 'https://iyfxnihemjawriguyamc.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5ZnhuaWhlbWphd3JpZ3V5YW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0OTczNTcsImV4cCI6MjEwNTA3MzM1N30.g95J_ztiz5WQvUXU_6Ehv9lXqkuWCnUTGklSyeI08HU';
+const SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5ZnhuaWhlbWphd3JpZ3V5YW1jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTQ5NzM1NywiZXhwIjoyMTA1MDczMzU3fQ.y38Ud0cg1ANqTLJMl5cP1FF_-rY4K_rmG4rm7HTanP0';
 
 // =====================================================
 // SQL PARA EXECUTAR NO SUPABASE (SQL Editor)

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurações & Usuários — Admin | Marido de Aluguel</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <div id="sidebar-mount"></div>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div>
+            <div class="page-title">Configurações do Sistema</div>
+            <div class="page-subtitle">Gerencie os usuários do painel e dados da sua empresa</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-primary btn-sm" onclick="openNewUserModal()">
+            <i class="fas fa-user-plus"></i> Novo Administrador
+          </button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <!-- Section: Gestão de Usuários -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div>
+              <div class="card-title"><i class="fas fa-users-gear"></i> Usuários e Permissões</div>
+              <p style="font-size:12.5px;color:var(--text-muted);margin-top:4px;">
+                Usuários com acesso de login ao painel administrativo.
+              </p>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="carregarUsuarios()">
+              <i class="fas fa-rotate"></i> Atualizar Lista
+            </button>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Usuário</th>
+                  <th>Email</th>
+                  <th>Criado Em</th>
+                  <th>Último Acesso</th>
+                  <th>Status</th>
+                  <th style="width: 120px; text-align: right;">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="usuarios-tbody">
+                <tr>
+                  <td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted);">
+                    <i class="fas fa-circle-notch fa-spin"></i> Carregando usuários...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section: Dados da Empresa & Orçamentos -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title"><i class="fas fa-store"></i> Dados do Negócio nos Comprovantes</div>
+              <p style="font-size:12.5px;color:var(--text-muted);margin-top:4px;">
+                Estas informações aparecem no cabeçalho dos comprovantes e certificados de garantia entregues ao cliente.
+              </p>
+            </div>
+          </div>
+          <form id="form-empresa" onsubmit="salvarConfigEmpresa(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Nome da Empresa / Profissional</label>
+                <input type="text" class="form-control" id="cfg-empresa-nome" placeholder="Ex: Marido de Aluguel Profissional" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">WhatsApp de Contato</label>
+                <input type="text" class="form-control" id="cfg-empresa-whats" placeholder="Ex: (11) 99999-9999">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group mb-0">
+                <label class="form-label">Chave PIX para Recebimentos</label>
+                <input type="text" class="form-control" id="cfg-empresa-pix" placeholder="CNPJ, Celular, E-mail ou Aleatória">
+              </div>
+              <div class="form-group mb-0">
+                <label class="form-label">Cidade / Região Principal de Atendimento</label>
+                <input type="text" class="form-control" id="cfg-empresa-cidade" placeholder="Ex: Guarulhos e Região SP">
+              </div>
+            </div>
+            <div style="margin-top: 18px; display:flex; justify-content:flex-end;">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-floppy-disk"></i> Salvar Informações
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal: Novo Usuário -->
+  <div class="modal-overlay" id="modal-novo-usuario">
+    <div class="modal" style="max-width: 480px;">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-user-plus"></i> Cadastrar Novo Administrador</div>
+        <button class="modal-close" onclick="closeModal('modal-novo-usuario')">&times;</button>
+      </div>
+      <form id="form-novo-usuario" onsubmit="cadastrarUsuario(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Nome ou Identificação (Opcional)</label>
+            <input type="text" class="form-control" id="novo-user-nome" placeholder="Ex: Augusto - Técnico">
+          </div>
+          <div class="form-group">
+            <label class="form-label">E-mail de Acesso *</label>
+            <input type="email" class="form-control" id="novo-user-email" placeholder="usuario@exemplo.com" required autocomplete="username">
+          </div>
+          <div class="form-group mb-0">
+            <label class="form-label">Senha Inicial *</label>
+            <div style="position:relative;">
+              <input type="password" class="form-control" id="novo-user-senha" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
+              <button type="button" onclick="togglePasswordVisibility('novo-user-senha', this)" 
+                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <span style="font-size:11.5px;color:var(--text-muted);margin-top:4px;display:block;">
+              O e-mail será confirmado automaticamente para permitir login imediato.
+            </span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-novo-usuario')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-cadastrar-user">
+            <i class="fas fa-check"></i> Cadastrar Acesso
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Redefinir Senha -->
+  <div class="modal-overlay" id="modal-senha-usuario">
+    <div class="modal" style="max-width: 440px;">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-key"></i> Redefinir Senha</div>
+        <button class="modal-close" onclick="closeModal('modal-senha-usuario')">&times;</button>
+      </div>
+      <form id="form-senha-usuario" onsubmit="atualizarSenhaUsuario(event)">
+        <input type="hidden" id="senha-user-id">
+        <div class="modal-body">
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">
+            Alterando senha de: <strong id="senha-user-email" style="color:var(--accent);"></strong>
+          </p>
+          <div class="form-group mb-0">
+            <label class="form-label">Nova Senha *</label>
+            <div style="position:relative;">
+              <input type="password" class="form-control" id="senha-user-nova" placeholder="Nova senha (mín. 6 dígitos)" required minlength="6">
+              <button type="button" onclick="togglePasswordVisibility('senha-user-nova', this)" 
+                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-senha-usuario')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-salvar-senha">
+            <i class="fas fa-check"></i> Salvar Nova Senha
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/admin/supabase-config.js"></script>
+  <script src="/admin/admin.js"></script>
+  <script>
+    let currentUserSession = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('configuracoes.html');
+      currentUserSession = await requireAuth();
+      if (!currentUserSession) return;
+
+      carregarConfigEmpresa();
+      await carregarUsuarios();
+    });
+
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    // ---- Carregar Lista de Usuários ----
+    async function carregarUsuarios() {
+      const tbody = document.getElementById('usuarios-tbody');
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted);">
+            <i class="fas fa-circle-notch fa-spin"></i> Carregando lista de administradores...
+          </td>
+        </tr>`;
+
+      const adminDb = getAdminSupabase();
+      if (!adminDb) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center;padding:24px;color:var(--danger);">
+              <i class="fas fa-triangle-exclamation"></i> Chave Service Role não configurada. Configure em <code>supabase-config.js</code> para gerenciar usuários.
+            </td>
+          </tr>`;
+        return;
+      }
+
+      try {
+        const { data, error } = await adminDb.auth.admin.listUsers();
+        if (error) throw error;
+
+        const users = data?.users || [];
+        if (users.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted);">Nenhum usuário encontrado.</td></tr>`;
+          return;
+        }
+
+        const currentUserId = currentUserSession?.user?.id;
+
+        tbody.innerHTML = users.map(u => {
+          const email = u.email || '-';
+          const name = u.user_metadata?.name || email.split('@')[0];
+          const initial = (name[0] || 'U').toUpperCase();
+          const isCurrent = u.id === currentUserId;
+          const createdAt = u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+          const lastSignIn = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Nunca acessou';
+
+          return `
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div class="user-avatar" style="width:30px;height:30px;font-size:12px;">${initial}</div>
+                  <div>
+                    <div style="font-weight:600;color:var(--text-primary);">
+                      ${escapeHtml(name)} ${isCurrent ? '<span class="badge badge-aprovado" style="margin-left:4px;font-size:10px;">Você</span>' : ''}
+                    </div>
+                    <div style="font-size:11px;color:var(--text-muted);font-family:monospace;">ID: ${u.id.substring(0,8)}...</div>
+                  </div>
+                </div>
+              </td>
+              <td>${escapeHtml(email)}</td>
+              <td style="color:var(--text-secondary);font-size:13px;">${createdAt}</td>
+              <td style="color:var(--text-secondary);font-size:13px;">${lastSignIn}</td>
+              <td>
+                <span class="badge badge-aprovado">Ativo</span>
+              </td>
+              <td style="text-align:right;">
+                <div class="table-actions" style="justify-content:flex-end;">
+                  <button class="btn-icon" title="Redefinir Senha" onclick="openResetPasswordModal('${u.id}', '${escapeHtml(email)}')">
+                    <i class="fas fa-key"></i>
+                  </button>
+                  ${isCurrent 
+                    ? `<button class="btn-icon" title="Você não pode excluir sua própria conta conectada" disabled style="opacity:0.3;cursor:not-allowed;"><i class="fas fa-trash"></i></button>`
+                    : `<button class="btn-icon danger" title="Excluir Usuário" onclick="confirmarExcluirUsuario('${u.id}', '${escapeHtml(email)}')"><i class="fas fa-trash"></i></button>`
+                  }
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error('Erro ao listar usuários:', err);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center;padding:24px;color:var(--danger);">
+              <i class="fas fa-circle-exclamation"></i> Falha ao carregar usuários: ${err.message}
+            </td>
+          </tr>`;
+      }
+    }
+
+    function openNewUserModal() {
+      document.getElementById('form-novo-usuario').reset();
+      openModal('modal-novo-usuario');
+      document.getElementById('novo-user-email').focus();
+    }
+
+    // ---- Cadastrar Novo Usuário ----
+    async function cadastrarUsuario(e) {
+      e.preventDefault();
+      const adminDb = getAdminSupabase();
+      if (!adminDb) {
+        showToast('Chave Service Role não disponível', 'error');
+        return;
+      }
+
+      const nome = document.getElementById('novo-user-nome').value.trim();
+      const email = document.getElementById('novo-user-email').value.trim();
+      const password = document.getElementById('novo-user-senha').value;
+      const btn = document.getElementById('btn-cadastrar-user');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Cadastrando...';
+
+      try {
+        const { data, error } = await adminDb.auth.admin.createUser({
+          email: email,
+          password: password,
+          email_confirm: true,
+          user_metadata: { name: nome || email.split('@')[0] }
+        });
+
+        if (error) throw error;
+
+        showToast('Novo administrador cadastrado com sucesso!', 'success');
+        closeModal('modal-novo-usuario');
+        await carregarUsuarios();
+      } catch (err) {
+        console.error('Erro ao cadastrar usuário:', err);
+        showToast('Erro ao criar usuário: ' + (err.message || 'Verifique os dados'), 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check"></i> Cadastrar Acesso';
+      }
+    }
+
+    // ---- Excluir Usuário ----
+    async function confirmarExcluirUsuario(userId, email) {
+      if (!confirm(`Tem certeza que deseja excluir o acesso de "${email}" permanentemente?`)) {
+        return;
+      }
+
+      const adminDb = getAdminSupabase();
+      if (!adminDb) {
+        showToast('Chave de administração indisponível', 'error');
+        return;
+      }
+
+      try {
+        const { error } = await adminDb.auth.admin.deleteUser(userId);
+        if (error) throw error;
+
+        showToast(`Usuário ${email} excluído com sucesso!`, 'success');
+        await carregarUsuarios();
+      } catch (err) {
+        console.error('Erro ao excluir:', err);
+        showToast('Erro ao excluir usuário: ' + err.message, 'error');
+      }
+    }
+
+    // ---- Redefinir Senha ----
+    function openResetPasswordModal(userId, email) {
+      document.getElementById('senha-user-id').value = userId;
+      document.getElementById('senha-user-email').textContent = email;
+      document.getElementById('senha-user-nova').value = '';
+      openModal('modal-senha-usuario');
+      document.getElementById('senha-user-nova').focus();
+    }
+
+    async function atualizarSenhaUsuario(e) {
+      e.preventDefault();
+      const adminDb = getAdminSupabase();
+      const userId = document.getElementById('senha-user-id').value;
+      const newPassword = document.getElementById('senha-user-nova').value;
+      const btn = document.getElementById('btn-salvar-senha');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Salvando...';
+
+      try {
+        const { error } = await adminDb.auth.admin.updateUserById(userId, {
+          password: newPassword
+        });
+
+        if (error) throw error;
+
+        showToast('Senha alterada com sucesso!', 'success');
+        closeModal('modal-senha-usuario');
+      } catch (err) {
+        console.error('Erro ao alterar senha:', err);
+        showToast('Erro ao atualizar senha: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check"></i> Salvar Nova Senha';
+      }
+    }
+
+    // ---- Configurações da Empresa (salvas no localStorage) ----
+    function carregarConfigEmpresa() {
+      const config = JSON.parse(localStorage.getItem('mda_empresa_config') || '{}');
+      document.getElementById('cfg-empresa-nome').value = config.nome || 'Marido de Aluguel Profissional';
+      document.getElementById('cfg-empresa-whats').value = config.whatsapp || '(11) 97793-1818';
+      document.getElementById('cfg-empresa-pix').value = config.pix || '';
+      document.getElementById('cfg-empresa-cidade').value = config.cidade || 'Guarulhos e Região SP';
+    }
+
+    function salvarConfigEmpresa(e) {
+      e.preventDefault();
+      const config = {
+        nome: document.getElementById('cfg-empresa-nome').value.trim(),
+        whatsapp: document.getElementById('cfg-empresa-whats').value.trim(),
+        pix: document.getElementById('cfg-empresa-pix').value.trim(),
+        cidade: document.getElementById('cfg-empresa-cidade').value.trim()
+      };
+      localStorage.setItem('mda_empresa_config', JSON.stringify(config));
+      showToast('Dados da empresa salvos com sucesso!', 'success');
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>

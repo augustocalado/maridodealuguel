@@ -70,9 +70,65 @@
                     </select>
                   </div>
                 </div>
-                <div class="form-group mb-0">
-                  <label class="form-label">Observações</label>
-                  <textarea class="form-control" id="orc-obs" placeholder="Detalhes, condições, prazo de execução..." style="min-height:70px;"></textarea>
+                <div class="form-row">
+                  <div class="form-group mb-0">
+                    <label class="form-label">Data e Hora do Agendamento</label>
+                    <input type="datetime-local" class="form-control" id="orc-agendamento">
+                  </div>
+                  <div class="form-group mb-0">
+                    <label class="form-label">Observações</label>
+                    <textarea class="form-control" id="orc-obs" placeholder="Detalhes, condições..." style="min-height:45px;"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Custos Adicionais (Premium) -->
+              <div class="card">
+                <div class="card-header" style="margin-bottom:12px;">
+                  <div class="card-title"><i class="fas fa-wallet"></i> Custos do Serviço (Lucro Real)</div>
+                  <span style="font-size:12px;color:var(--text-muted)">Calcule o seu lucro deduzindo materiais e gasolina</span>
+                </div>
+                <div class="form-row">
+                  <div class="form-group mb-0">
+                    <label class="form-label">Custo com Materiais (R$)</label>
+                    <input type="number" class="form-control" id="orc-custo-materiais" value="0" min="0" step="0.01" oninput="calcTotal()">
+                  </div>
+                  <div class="form-group mb-0">
+                    <label class="form-label">Deslocamento/Gasolina (R$)</label>
+                    <input type="number" class="form-control" id="orc-custo-deslocamento" value="0" min="0" step="0.01" oninput="calcTotal()">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fotos (Antes e Depois) -->
+              <div class="card">
+                <div class="card-header" style="margin-bottom:12px;">
+                  <div class="card-title"><i class="fas fa-camera"></i> Fotos do Serviço (Garantia/Portfólio)</div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group mb-0">
+                    <label class="form-label">Antes (Tirar Foto ou Galeria)</label>
+                    <input type="file" class="form-control" id="orc-foto-antes" accept="image/*" capture="environment">
+                    <div id="preview-antes" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:10px;"></div>
+                  </div>
+                  <div class="form-group mb-0">
+                    <label class="form-label">Depois (Tirar Foto ou Galeria)</label>
+                    <input type="file" class="form-control" id="orc-foto-depois" accept="image/*" capture="environment">
+                    <div id="preview-depois" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:10px;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Checklist do Serviço -->
+              <div class="card">
+                <div class="card-header" style="margin-bottom:12px;">
+                  <div class="card-title"><i class="fas fa-list-check"></i> Checklist de Execução</div>
+                  <span style="font-size:12px;color:var(--text-muted)">Passo a passo ou itens solicitados pelo cliente</span>
+                </div>
+                <div id="checklist-container" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+                <div style="display:flex;gap:8px;">
+                  <input type="text" class="form-control" id="new-check-input" placeholder="Ex: Limpar local após furar..." style="flex:1;">
+                  <button type="button" class="btn btn-secondary" onclick="addChecklistItem()">Adicionar</button>
                 </div>
               </div>
 
@@ -121,8 +177,13 @@
                 </div>
                 <div class="summary-row"><span>Valor Desconto</span><span id="sum-desconto" style="color:var(--danger)">- R$ 0,00</span></div>
                 <div class="summary-row total">
-                  <span>TOTAL</span>
+                  <span>Faturamento</span>
                   <span id="sum-total">R$ 0,00</span>
+                </div>
+                <div class="summary-row" style="margin-top:12px;"><span>Custos Extras</span><span id="sum-custos" style="color:var(--danger)">- R$ 0,00</span></div>
+                <div class="summary-row total" style="border-top-color:var(--success);color:var(--success);">
+                  <span>LUCRO LÍQUIDO</span>
+                  <span id="sum-lucro">R$ 0,00</span>
                 </div>
               </div>
 
@@ -153,6 +214,7 @@
     let produtos = [];
     let orcamentoId = null;
     let itemCount = 0;
+    let checkCount = 0;
 
     const params = new URLSearchParams(window.location.search);
     const editId = params.get('id');
@@ -195,9 +257,11 @@
     })();
 
     async function loadExistingQuote(id) {
-      const [{ data: orc }, { data: itens }] = await Promise.all([
+      const [{ data: orc }, { data: itens }, { data: fotos }, { data: checks }] = await Promise.all([
         db.from('orcamentos').select('*').eq('id', id).single(),
-        db.from('orcamento_itens').select('*').eq('orcamento_id', id).order('id')
+        db.from('orcamento_itens').select('*').eq('orcamento_id', id).order('id'),
+        db.from('orcamento_fotos').select('*').eq('orcamento_id', id),
+        db.from('orcamento_checklists').select('*').eq('orcamento_id', id).order('criado_em')
       ]);
 
       if (!orc) { showToast('Orçamento não encontrado', 'error'); return; }
@@ -205,6 +269,27 @@
       document.getElementById('orc-status').value = orc.status;
       document.getElementById('orc-obs').value = orc.observacoes || '';
       document.getElementById('orc-desconto').value = orc.desconto_geral || 0;
+      
+      // Load Premium fields
+      if (orc.data_agendamento) {
+        // Convert to local datetime string format YYYY-MM-DDTHH:mm
+        const d = new Date(orc.data_agendamento);
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        document.getElementById('orc-agendamento').value = d.toISOString().slice(0, 16);
+      }
+      document.getElementById('orc-custo-materiais').value = orc.custo_materiais || 0;
+      document.getElementById('orc-custo-deslocamento').value = orc.custo_deslocamento || 0;
+
+      // Render photos if any
+      (fotos || []).forEach(f => {
+        const div = document.createElement('img');
+        div.src = f.url_foto;
+        div.style.cssText = "width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border)";
+        document.getElementById(`preview-${f.tipo}`).appendChild(div);
+      });
+
+      // Render Checklists
+      (checks || []).forEach(c => renderChecklistItem(c.item_texto, c.concluido));
 
       (itens || []).forEach(item => {
         addItem(item.descricao, item.quantidade, item.preco_unitario, item.desconto);
@@ -302,9 +387,16 @@
       const discVal = subtotal * discPct / 100;
       const total = subtotal - discVal;
 
+      const mat = parseFloat(document.getElementById('orc-custo-materiais').value) || 0;
+      const des = parseFloat(document.getElementById('orc-custo-deslocamento').value) || 0;
+      const custos = mat + des;
+      const lucro = total - custos;
+
       document.getElementById('sum-subtotal').textContent = formatCurrency(subtotal);
       document.getElementById('sum-desconto').textContent = '- ' + formatCurrency(discVal);
       document.getElementById('sum-total').textContent = formatCurrency(total);
+      document.getElementById('sum-custos').textContent = '- ' + formatCurrency(custos);
+      document.getElementById('sum-lucro').textContent = formatCurrency(lucro);
     }
 
     function getItems() {
@@ -322,6 +414,41 @@
       return items;
     }
 
+    // --- CHECKLIST LOGIC ---
+    function addChecklistItem() {
+      const inp = document.getElementById('new-check-input');
+      const val = inp.value.trim();
+      if (!val) return;
+      renderChecklistItem(val, false);
+      inp.value = '';
+    }
+
+    function renderChecklistItem(text, concluido) {
+      checkCount++;
+      const div = document.createElement('div');
+      div.id = `check-row-${checkCount}`;
+      div.style.cssText = "display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.02);padding:10px 14px;border-radius:8px;border:1px solid var(--border);";
+      div.innerHTML = `
+        <input type="checkbox" id="check-box-${checkCount}" ${concluido ? 'checked' : ''} style="width:16px;height:16px;cursor:pointer;">
+        <input type="text" id="check-text-${checkCount}" value="${text}" style="flex:1;background:transparent;border:none;color:var(--text-primary);font-size:13.5px;outline:none;">
+        <button type="button" onclick="document.getElementById('check-row-${checkCount}').remove()" style="background:none;border:none;color:var(--danger);cursor:pointer;"><i class="fas fa-trash"></i></button>
+      `;
+      document.getElementById('checklist-container').appendChild(div);
+    }
+
+    function getChecklists() {
+      const rows = document.querySelectorAll('#checklist-container > div');
+      const checks = [];
+      rows.forEach(row => {
+        const id = row.id.replace('check-row-', '');
+        const text = document.getElementById(`check-text-${id}`)?.value?.trim();
+        const concluido = document.getElementById(`check-box-${id}`)?.checked || false;
+        if (text) checks.push({ item_texto: text, concluido });
+      });
+      return checks;
+    }
+    // -----------------------
+
     document.getElementById('form-orcamento').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btn-salvar');
@@ -333,6 +460,7 @@
       const obs       = document.getElementById('orc-obs').value.trim() || null;
       const descGeral = parseFloat(document.getElementById('orc-desconto').value) || 0;
       const items     = getItems();
+      const checks    = getChecklists();
 
       if (items.length === 0) {
         showToast('Adicione ao menos 1 serviço/item', 'warning');
@@ -344,11 +472,21 @@
       let subtotal = items.reduce((s, i) => s + i.subtotal, 0);
       const total = subtotal * (1 - descGeral / 100);
 
+      const agendamento = document.getElementById('orc-agendamento').value;
+      const mat = parseFloat(document.getElementById('orc-custo-materiais').value) || 0;
+      const des = parseFloat(document.getElementById('orc-custo-deslocamento').value) || 0;
+      const custos = mat + des;
+      const lucro = total - custos;
+
       const orcPayload = {
         cliente_id: clienteId || null,
         status, observacoes: obs,
         desconto_geral: descGeral,
         total,
+        data_agendamento: agendamento ? new Date(agendamento).toISOString() : null,
+        custo_materiais: mat,
+        custo_deslocamento: des,
+        lucro_liquido: lucro,
         atualizado_em: new Date().toISOString()
       };
 
@@ -357,7 +495,10 @@
 
       if (orcId) {
         ({ error } = await db.from('orcamentos').update(orcPayload).eq('id', orcId));
-        if (!error) await db.from('orcamento_itens').delete().eq('orcamento_id', orcId);
+        if (!error) {
+          await db.from('orcamento_itens').delete().eq('orcamento_id', orcId);
+          await db.from('orcamento_checklists').delete().eq('orcamento_id', orcId);
+        }
       } else {
         const { data, error: e } = await db.from('orcamentos').insert(orcPayload).select().single();
         error = e;
@@ -376,6 +517,16 @@
       const { error: eItems } = await db.from('orcamento_itens').insert(itensPayload);
       if (eItems) { showToast('Orçamento salvo mas houve erro nos itens', 'warning'); }
 
+      // Insert checklists
+      if (checks.length > 0) {
+        const checkPayload = checks.map(c => ({ ...c, orcamento_id: orcId }));
+        await db.from('orcamento_checklists').insert(checkPayload);
+      }
+
+      // Upload fotos
+      await uploadFoto(document.getElementById('orc-foto-antes').files[0], 'antes', orcId);
+      await uploadFoto(document.getElementById('orc-foto-depois').files[0], 'depois', orcId);
+
       orcamentoId = orcId;
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-floppy-disk"></i> Salvar Orçamento';
@@ -388,6 +539,26 @@
       // Update URL without reload
       history.replaceState(null, '', `orcamento-novo.html?id=${orcId}`);
     });
+
+    async function uploadFoto(file, tipo, orcId) {
+      if (!file) return;
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${orcId}_${tipo}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+        
+        const { error: uploadError } = await db.storage.from('fotos_servicos').upload(fileName, file);
+        if (uploadError) {
+          console.error(uploadError);
+          showToast(`Falha no upload da foto "${tipo}". Verifique se o Bucket "fotos_servicos" foi criado.`, 'error');
+          return;
+        }
+        
+        const { data: { publicUrl } } = db.storage.from('fotos_servicos').getPublicUrl(fileName);
+        await db.from('orcamento_fotos').insert({ orcamento_id: orcId, tipo, url_foto: publicUrl });
+      } catch (err) {
+        console.error(err);
+      }
+    }
   </script>
 </body>
 </html>

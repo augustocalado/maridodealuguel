@@ -60,21 +60,42 @@
             <div class="stat-icon"><i class="fas fa-circle-dollar-to-slot"></i></div>
             <div class="stat-info">
               <div class="stat-value fs-18" id="stat-faturamento">—</div>
-              <div class="stat-label">Faturamento este mês</div>
+              <div class="stat-label">Faturamento (Bruto)</div>
+            </div>
+          </div>
+          <div class="stat-card" style="--stat-color:var(--success);--stat-bg:var(--success-bg)">
+            <div class="stat-icon"><i class="fas fa-hand-holding-dollar"></i></div>
+            <div class="stat-info">
+              <div class="stat-value fs-18" id="stat-lucro">—</div>
+              <div class="stat-label">Lucro Líquido (Mês)</div>
             </div>
           </div>
         </div>
 
         <!-- Grid: Recent + Quick Actions -->
         <div class="dashboard-grid">
-          <!-- Recent Quotes -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title"><i class="fas fa-clock-rotate-left"></i> Últimos Orçamentos</div>
-              <a href="orcamentos.html" class="btn btn-secondary btn-sm">Ver todos</a>
+          <!-- Recent Quotes & Agenda -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <!-- Agenda do Dia -->
+            <div class="card">
+              <div class="card-header" style="margin-bottom:12px;">
+                <div class="card-title"><i class="fas fa-calendar-day"></i> Agenda de Hoje</div>
+                <a href="agenda.html" class="btn btn-secondary btn-sm">Ver agenda</a>
+              </div>
+              <div id="agenda-list" class="recent-list">
+                <div class="loading-overlay" style="padding:15px"><span class="spinner"></span></div>
+              </div>
             </div>
-            <div id="recent-list" class="recent-list">
-              <div class="loading-overlay"><span class="spinner"></span> Carregando...</div>
+
+            <!-- Recent Quotes -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fas fa-clock-rotate-left"></i> Últimos Orçamentos</div>
+                <a href="orcamentos.html" class="btn btn-secondary btn-sm">Ver todos</a>
+              </div>
+              <div id="recent-list" class="recent-list">
+                <div class="loading-overlay"><span class="spinner"></span> Carregando...</div>
+              </div>
             </div>
           </div>
 
@@ -136,7 +157,7 @@
         { data: statusData }
       ] = await Promise.all([
         db.from('orcamentos').select('*', { count: 'exact', head: true }).gte('criado_em', monthStart),
-        db.from('orcamentos').select('status,total').gte('criado_em', monthStart),
+        db.from('orcamentos').select('status,total,lucro_liquido').gte('criado_em', monthStart),
         db.from('clientes').select('*', { count: 'exact', head: true }),
         db.from('orcamentos').select('status,total').gte('criado_em', monthStart)
       ]);
@@ -148,7 +169,9 @@
       document.getElementById('stat-aprovados').textContent = aprovados.length;
 
       const faturamento = aprovados.reduce((s, o) => s + (parseFloat(o.total) || 0), 0);
+      const lucro = aprovados.reduce((s, o) => s + (parseFloat(o.lucro_liquido) || 0), 0);
       document.getElementById('stat-faturamento').textContent = formatCurrency(faturamento);
+      document.getElementById('stat-lucro').textContent = formatCurrency(lucro);
 
       // Status Summary
       const statuses = ['rascunho','enviado','aprovado','executado','cancelado'];
@@ -186,6 +209,35 @@
               <div style="margin-top:4px">${statusBadge(o.status)}</div>
             </div>
           </a>`).join('');
+      }
+
+      // Today's Agenda
+      const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+      const todayEnd = new Date(); todayEnd.setHours(23,59,59,999);
+      
+      const { data: agenda } = await db
+        .from('orcamentos')
+        .select('id, numero, data_agendamento, clientes(nome, bairro)')
+        .gte('data_agendamento', todayStart.toISOString())
+        .lte('data_agendamento', todayEnd.toISOString())
+        .order('data_agendamento', { ascending: true })
+        .limit(5);
+
+      const agendaEl = document.getElementById('agenda-list');
+      if (!agenda || agenda.length === 0) {
+        agendaEl.innerHTML = `<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px;"><i class="fas fa-check-circle" style="font-size:24px;opacity:0.3;display:block;margin-bottom:8px;"></i> Nenhum serviço agendado para hoje.</div>`;
+      } else {
+        agendaEl.innerHTML = agenda.map(o => {
+          const time = new Date(o.data_agendamento).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          return `
+          <a href="orcamento-novo.html?id=${o.id}" class="recent-item" style="border-left: 3px solid var(--accent)">
+            <div style="font-weight:800;color:var(--accent);font-size:15px;width:50px;">${time}</div>
+            <div class="recent-info">
+              <div class="recent-title">${o.clientes?.nome || 'Sem cliente'} (Orç. #${o.numero})</div>
+              <div class="recent-sub"><i class="fas fa-map-marker-alt"></i> ${o.clientes?.bairro || 'Sem endereço'}</div>
+            </div>
+          </a>`;
+        }).join('');
       }
     })();
   </script>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda de Serviços — Admin | Marido de Aluguel</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+  <style>
+    .agenda-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      display: grid;
+      grid-template-columns: 140px 1fr auto;
+      gap: 20px;
+      align-items: center;
+      transition: var(--transition);
+    }
+    .agenda-card:hover {
+      border-color: var(--border-accent);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    }
+    .agenda-time {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 184, 0, 0.08);
+      border: 1px solid var(--border-accent);
+      border-radius: 10px;
+      padding: 10px 14px;
+      text-align: center;
+    }
+    .agenda-time .day { font-size: 18px; font-weight: 800; color: var(--accent); }
+    .agenda-time .hour { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+    .agenda-time.today {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .agenda-time.today .day,
+    .agenda-time.today .hour { color: #000; }
+    .agenda-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    @media (max-width: 768px) {
+      .agenda-card { grid-template-columns: 1fr; gap: 14px; }
+      .agenda-time { flex-direction: row; gap: 10px; justify-content: flex-start; }
+      .agenda-actions { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <div id="sidebar-mount"></div>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div>
+            <div class="page-title">Agenda de Visitas & Serviços</div>
+            <div class="page-subtitle">Organize suas ordens de serviço e rotas do dia</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <a href="orcamento-novo.html" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Novo Agendamento
+          </a>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <!-- Tabs -->
+        <div class="tabs" id="agenda-tabs">
+          <button class="tab active" data-filter="hoje">Hoje</button>
+          <button class="tab" data-filter="proximos">Próximos 7 Dias</button>
+          <button class="tab" data-filter="todos">Todos Agendados</button>
+          <button class="tab" data-filter="sem-data">Sem Agendamento</button>
+        </div>
+
+        <div id="agenda-loading" class="loading-overlay" style="display:flex;">
+          <span class="spinner"></span> Carregando agenda...
+        </div>
+
+        <div id="agenda-list" style="display:none;"></div>
+
+        <div id="empty-state" class="empty-state" style="display:none;">
+          <i class="fas fa-calendar-check"></i>
+          <h3>Nenhum serviço agendado</h3>
+          <p>Você não tem visitas marcadas para este filtro.</p>
+          <a href="orcamento-novo.html" class="btn btn-primary" style="margin-top:14px;">
+            <i class="fas fa-plus"></i> Agendar Novo Serviço
+          </a>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/admin/supabase-config.js"></script>
+  <script src="/admin/admin.js"></script>
+  <script>
+    let allScheduled = [];
+    let currentFilter = 'hoje';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('agenda.html');
+      const session = await requireAuth();
+      if (!session) return;
+
+      await loadAgenda();
+
+      document.getElementById('agenda-tabs').addEventListener('click', (e) => {
+        if (!e.target.classList.contains('tab')) return;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        currentFilter = e.target.dataset.filter;
+        renderAgenda();
+      });
+    });
+
+    async function loadAgenda() {
+      document.getElementById('agenda-loading').style.display = 'flex';
+      document.getElementById('agenda-list').style.display = 'none';
+      document.getElementById('empty-state').style.display = 'none';
+
+      const { data, error } = await db.from('orcamentos')
+        .select(`
+          id, numero, status, total, data_agendamento, observacoes,
+          clientes ( id, nome, telefone, endereco, bairro, cidade ),
+          orcamento_itens ( descricao )
+        `)
+        .order('data_agendamento', { ascending: true, nullsLast: true });
+
+      document.getElementById('agenda-loading').style.display = 'none';
+
+      if (error) {
+        showToast('Erro ao carregar agendamentos', 'error');
+        return;
+      }
+
+      allScheduled = data || [];
+      renderAgenda();
+    }
+
+    function renderAgenda() {
+      const container = document.getElementById('agenda-list');
+      const emptyState = document.getElementById('empty-state');
+
+      const now = new Date();
+      const todayStr = now.toISOString().slice(0, 10);
+      const sevenDaysLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+      const filtered = allScheduled.filter(item => {
+        if (currentFilter === 'sem-data') {
+          return !item.data_agendamento && item.status !== 'executado' && item.status !== 'cancelado';
+        }
+        if (!item.data_agendamento) return false;
+
+        const itemDate = new Date(item.data_agendamento);
+        const itemDateStr = itemDate.toISOString().slice(0, 10);
+
+        if (currentFilter === 'hoje') {
+          return itemDateStr === todayStr;
+        }
+        if (currentFilter === 'proximos') {
+          return itemDate >= now && itemDate <= sevenDaysLater;
+        }
+        if (currentFilter === 'todos') {
+          return true;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      container.style.display = 'block';
+      emptyState.style.display = 'none';
+
+      container.innerHTML = filtered.map(item => {
+        const cliente = item.clientes || {};
+        const itensDesc = (item.orcamento_itens || []).map(i => i.descricao).join(', ') || 'Sem itens descritos';
+        
+        let dateBadge = '';
+        if (item.data_agendamento) {
+          const d = new Date(item.data_agendamento);
+          const isToday = d.toISOString().slice(0, 10) === todayStr;
+          const diaMes = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).toUpperCase();
+          const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+          dateBadge = `
+            <div class="agenda-time ${isToday ? 'today' : ''}">
+              <span style="font-size:11px;font-weight:700;text-transform:uppercase;">${isToday ? 'HOJE' : diaMes}</span>
+              <span class="day">${d.getDate()}</span>
+              <span class="hour"><i class="fas fa-clock"></i> ${hora}</span>
+            </div>
+          `;
+        } else {
+          dateBadge = `
+            <div class="agenda-time" style="background:rgba(255,255,255,0.03);border-color:var(--border);">
+              <span style="font-size:12px;color:var(--text-muted);">Sem data</span>
+            </div>
+          `;
+        }
+
+        // WhatsApp Link
+        const cleanPhone = (cliente.telefone || '').replace(/\D/g, '');
+        const waLink = cleanPhone 
+          ? `https://wa.me/55${cleanPhone}?text=${encodeURIComponent(`Olá ${cliente.nome}, tudo bem? Confirmando nossa visita técnica para o orçamento #${item.numero}.`)}`
+          : null;
+
+        // Endereço completo para rotas
+        const fullAddress = [cliente.endereco, cliente.bairro, cliente.cidade].filter(Boolean).join(', ');
+        const mapsLink = fullAddress 
+          ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}` 
+          : null;
+
+        return `
+          <div class="agenda-card">
+            ${dateBadge}
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <span class="fw-bold text-accent">#${item.numero || '—'}</span>
+                <strong style="font-size:15px;color:var(--text-primary);">${escapeHtml(cliente.nome || 'Cliente não identificado')}</strong>
+                ${statusBadge(item.status)}
+              </div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:6px;">
+                <i class="fas fa-wrench" style="color:var(--accent);margin-right:4px;"></i> ${escapeHtml(itensDesc)}
+              </div>
+              ${fullAddress ? `
+                <div style="font-size:12.5px;color:var(--text-muted);display:flex;align-items:center;gap:6px;">
+                  <i class="fas fa-location-dot" style="color:var(--danger)"></i> ${escapeHtml(fullAddress)}
+                  ${mapsLink ? `<a href="${mapsLink}" target="_blank" class="text-accent" style="text-decoration:underline;font-size:11.5px;margin-left:6px;">Abrir no Maps <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+                </div>
+              ` : ''}
+            </div>
+            <div class="agenda-actions">
+              ${waLink ? `
+                <a href="${waLink}" target="_blank" class="btn btn-success btn-sm" title="Conversar no WhatsApp">
+                  <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+              ` : ''}
+              <a href="comprovante.html?id=${item.id}" target="_blank" class="btn btn-secondary btn-sm" title="Ver Orçamento">
+                <i class="fas fa-print"></i>
+              </a>
+              <a href="orcamento-novo.html?id=${item.id}" class="btn btn-secondary btn-icon btn-sm" title="Editar / Concluir">
+                <i class="fas fa-pen"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>

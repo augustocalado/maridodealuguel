@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pós-Venda & Oportunidades — Admin | Marido de Aluguel</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <div id="sidebar-mount"></div>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div>
+            <div class="page-title">Pós-Venda & Retorno de Clientes</div>
+            <div class="page-subtitle">Reative clientes antigos e gere serviços recorrentes de manutenção</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-secondary btn-sm" onclick="carregarOportunidades()">
+            <i class="fas fa-rotate"></i> Atualizar
+          </button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <!-- Quick Insight Cards -->
+        <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 24px;">
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(245,158,11,0.1);color:var(--accent);">
+              <i class="fas fa-comments"></i>
+            </div>
+            <div class="kpi-label">Clientes p/ Contato</div>
+            <div class="kpi-value" id="kpi-total-oportunidades">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(16,185,129,0.1);color:var(--success);">
+              <i class="fas fa-hand-holding-dollar"></i>
+            </div>
+            <div class="kpi-label">Potencial de Faturamento</div>
+            <div class="kpi-value" id="kpi-potencial">R$ 0,00</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:rgba(59,130,246,0.1);color:#3B82F6;">
+              <i class="fas fa-clock-rotate-left"></i>
+            </div>
+            <div class="kpi-label">Média de Ciclo</div>
+            <div class="kpi-value">60 a 90 dias</div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div id="loading" class="loading-overlay"><span class="spinner"></span> Analisando histórico de clientes...</div>
+          <div class="table-container" id="table-wrap" style="display:none;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Último Serviço</th>
+                  <th>Data do Serviço</th>
+                  <th>Tempo Decorrido</th>
+                  <th>Oportunidade Sugerida</th>
+                  <th style="width: 140px; text-align: right;">Ação</th>
+                </tr>
+              </thead>
+              <tbody id="oportunidades-tbody"></tbody>
+            </table>
+          </div>
+
+          <div id="empty-state" class="empty-state" style="display:none;">
+            <i class="fas fa-user-check"></i>
+            <h3>Nenhum cliente para recontato no momento</h3>
+            <p>Conforme você for marcando orçamentos como "Executado", o sistema listará automaticamente clientes para pós-venda.</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/admin/supabase-config.js"></script>
+  <script src="/admin/admin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('sidebar-mount').innerHTML = getSidebarHTML('oportunidades.html');
+      const session = await requireAuth();
+      if (!session) return;
+
+      await carregarOportunidades();
+    });
+
+    async function carregarOportunidades() {
+      document.getElementById('loading').style.display = 'flex';
+      document.getElementById('table-wrap').style.display = 'none';
+      document.getElementById('empty-state').style.display = 'none';
+
+      // Load executed or approved quotes
+      const { data, error } = await db.from('orcamentos')
+        .select(`
+          id, numero, total, status, criado_em, atualizado_em,
+          clientes ( id, nome, telefone, bairro ),
+          orcamento_itens ( descricao )
+        `)
+        .in('status', ['executado', 'aprovado'])
+        .order('criado_em', { ascending: false });
+
+      document.getElementById('loading').style.display = 'none';
+
+      if (error) {
+        showToast('Erro ao analisar histórico de serviços', 'error');
+        return;
+      }
+
+      const rows = data || [];
+      const now = new Date();
+
+      // Filter and map to unique clients or quotes that are older than 14 days
+      const oportunidades = [];
+      const seenClients = new Set();
+
+      rows.forEach(q => {
+        if (!q.clientes || !q.clientes.id) return;
+        if (seenClients.has(q.clientes.id)) return; // prioritize the most recent job for each client
+        seenClients.add(q.clientes.id);
+
+        const dataRef = new Date(q.atualizado_em || q.criado_em);
+        const diffMs = now - dataRef;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        const itemPrincipal = q.orcamento_itens?.[0]?.descricao || 'Manutenção Residencial';
+        
+        let sugestao = 'Mensagem de Cortesia e Nova Manutenção';
+        if (itemPrincipal.toLowerCase().includes('ar-condicionado')) {
+          sugestao = 'Limpeza e Higienização Preventiva de Ar';
+        } else if (itemPrincipal.toLowerCase().includes('chuveiro') || itemPrincipal.toLowerCase().includes('resistência')) {
+          sugestao = 'Revisão Elétrica Preventiva';
+        } else if (itemPrincipal.toLowerCase().includes('torneira') || itemPrincipal.toLowerCase().includes('vazamento')) {
+          sugestao = 'Inspeção Hidráulica e Registros';
+        } else if (diffDays >= 90) {
+          sugestao = 'Revisão Geral da Casa / Reparos';
+        }
+
+        oportunidades.push({
+          cliente: q.clientes,
+          orcamento: q,
+          diffDays,
+          dataStr: dataRef.toLocaleDateString('pt-BR'),
+          itemPrincipal,
+          sugestao
+        });
+      });
+
+      document.getElementById('kpi-total-oportunidades').textContent = oportunidades.length;
+      const potencial = oportunidades.length * 150; // estimated average ticket R$ 150
+      document.getElementById('kpi-potencial').textContent = formatCurrency(potencial);
+
+      if (oportunidades.length === 0) {
+        document.getElementById('empty-state').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('table-wrap').style.display = 'block';
+      document.getElementById('oportunidades-tbody').innerHTML = oportunidades.map(op => {
+        const c = op.cliente;
+        const phone = (c.telefone || '').replace(/\D/g, '');
+        const mensagem = `Olá ${c.nome}, tudo bem? Passando para saber como ficou o serviço de *${op.itemPrincipal}* que fizemos na sua casa! Está tudo 100% funcionando? Estamos com agenda aberta para manutenções e reparos esta semana caso precise de mais alguma coisa. Abraço!`;
+        const waLink = phone ? `https://wa.me/55${phone}?text=${encodeURIComponent(mensagem)}` : null;
+
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:600;color:var(--text-primary);">${escapeHtml(c.nome)}</div>
+              <div style="font-size:12px;color:var(--text-muted);">${escapeHtml(c.bairro || 'Região')}</div>
+            </td>
+            <td>
+              <span style="font-size:13px;color:var(--text-secondary);"><i class="fas fa-wrench" style="color:var(--accent);margin-right:4px;"></i> ${escapeHtml(op.itemPrincipal)}</span>
+            </td>
+            <td style="font-size:12.5px;color:var(--text-muted);">${op.dataStr}</td>
+            <td>
+              <span class="badge ${op.diffDays >= 60 ? 'badge-executado' : 'badge-rascunho'}">
+                ${op.diffDays === 0 ? 'Hoje' : `${op.diffDays} dias atrás`}
+              </span>
+            </td>
+            <td>
+              <span style="font-weight:500;font-size:13px;color:var(--text-primary);">${escapeHtml(op.sugestao)}</span>
+            </td>
+            <td style="text-align:right;">
+              ${waLink ? `
+                <a href="${waLink}" target="_blank" class="btn btn-success btn-sm">
+                  <i class="fab fa-whatsapp"></i> Chamar Cliente
+                </a>
+              ` : `<span style="font-size:12px;color:var(--text-muted);">Sem WhatsApp</span>`}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>

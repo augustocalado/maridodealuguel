@@ -112,7 +112,7 @@
       document.getElementById('empty-state').style.display = 'none';
 
       let query = db.from('orcamentos')
-        .select('id, numero, status, total, criado_em, observacoes, clientes(id, nome, telefone)')
+        .select('id, numero, status, total, lucro_liquido, data_agendamento, criado_em, observacoes, clientes(id, nome, telefone)')
         .order('criado_em', { ascending: false });
 
       if (clienteFilter) query = query.eq('cliente_id', clienteFilter);
@@ -144,12 +144,15 @@
       document.getElementById('table-wrap').style.display = 'block';
       document.getElementById('empty-state').style.display = 'none';
 
-      document.getElementById('quotes-tbody').innerHTML = filtered.map(q => `
+      document.getElementById('quotes-tbody').innerHTML = filtered.map(q => {
+        const agendaStr = q.data_agendamento ? new Date(q.data_agendamento).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : null;
+        return `
         <tr>
           <td><span class="fw-bold text-accent">#${q.numero || '—'}</span></td>
           <td>
             <div style="font-weight:600">${q.clientes?.nome || '<span class="text-muted">Sem cliente</span>'}</div>
             ${q.clientes?.telefone ? `<div style="font-size:11.5px;color:var(--text-muted)">${formatPhone(q.clientes.telefone)}</div>` : ''}
+            ${agendaStr ? `<div style="font-size:11px;color:var(--accent);margin-top:2px;"><i class="fas fa-calendar-day"></i> ${agendaStr}</div>` : ''}
           </td>
           <td>
             <select class="form-control status-select" style="width:auto;padding:5px 10px;font-size:12.5px;" 
@@ -161,12 +164,18 @@
               <option value="cancelado" ${q.status==='cancelado'?'selected':''}>Cancelado</option>
             </select>
           </td>
-          <td><span class="fw-bold" style="font-size:15px">${formatCurrency(q.total)}</span></td>
+          <td>
+            <div class="fw-bold" style="font-size:15px">${formatCurrency(q.total)}</div>
+            ${q.lucro_liquido ? `<div style="font-size:11px;color:var(--success);">Lucro: ${formatCurrency(q.lucro_liquido)}</div>` : ''}
+          </td>
           <td style="font-size:12.5px;color:var(--text-muted)">${formatDate(q.criado_em)}</td>
           <td>
             <div class="actions-cell">
-              <a href="comprovante.html?id=${q.id}" class="btn btn-secondary btn-sm" title="Ver / Imprimir">
-                <i class="fas fa-print"></i> Imprimir
+              <a href="comprovante.html?id=${q.id}" class="btn btn-secondary btn-sm" title="Ver / Imprimir Comprovante" target="_blank">
+                <i class="fas fa-print"></i>
+              </a>
+              <a href="garantia.html?id=${q.id}" class="btn btn-secondary btn-sm" title="Certificado de Garantia" target="_blank" style="color:var(--accent);">
+                <i class="fas fa-shield-halved"></i>
               </a>
               <a href="orcamento-novo.html?id=${q.id}" class="btn btn-secondary btn-icon btn-sm" title="Editar">
                 <i class="fas fa-pen"></i>
@@ -176,7 +185,8 @@
               </button>
             </div>
           </td>
-        </tr>`).join('');
+        </tr>`;
+      }).join('');
     }
 
     async function updateStatus(id, status) {

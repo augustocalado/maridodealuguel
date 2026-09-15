@@ -115,13 +115,27 @@ function setActiveNav() {
   });
 }
 
+// Supabase Admin Client (para gestão de usuários via Service Role)
+function getAdminSupabase() {
+  if (typeof SUPABASE_SERVICE_ROLE_KEY === 'undefined' || !SUPABASE_SERVICE_ROLE_KEY) {
+    return null;
+  }
+  const { createClient } = supabase;
+  return createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+}
+
 // ---- Sidebar (shared HTML injected by each page) ----
 function getSidebarHTML(active = '') {
   const items = [
     { href: 'dashboard.html', icon: 'fa-gauge-high', label: 'Dashboard' },
     { href: 'orcamentos.html', icon: 'fa-file-invoice-dollar', label: 'Orçamentos' },
+    { href: 'agenda.html', icon: 'fa-calendar-days', label: 'Agenda' },
     { href: 'clientes.html', icon: 'fa-users', label: 'Clientes' },
     { href: 'produtos.html', icon: 'fa-toolbox', label: 'Serviços & Produtos' },
+    { href: 'oportunidades.html', icon: 'fa-bullhorn', label: 'Pós-Venda' },
+    { href: 'configuracoes.html', icon: 'fa-gear', label: 'Configurações' },
   ];
   const navHTML = items.map(i => `
     <a href="${i.href}" class="nav-item ${active === i.href ? 'active' : ''}">
@@ -154,9 +168,14 @@ function getSidebarHTML(active = '') {
           <div class="user-name" id="user-name">Admin</div>
           <div class="user-role">Administrador</div>
         </div>
-        <button class="btn-logout" onclick="logout()" title="Sair">
-          <i class="fas fa-sign-out-alt"></i>
-        </button>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <a href="configuracoes.html" class="btn-user-action" title="Configurações e Usuários">
+            <i class="fas fa-gear"></i>
+          </a>
+          <button class="btn-user-action danger" onclick="logout()" title="Sair do Sistema">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
       </div>
     </div>
   </aside>
