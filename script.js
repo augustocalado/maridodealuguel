@@ -116,15 +116,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const service = document.getElementById('modalService').value;
       const details = document.getElementById('modalDetails').value;
 
-      const whatsappNumber = '5511980604534'; // nÃºmero comercial Guarulhos
+      const whatsappNumber = '5511980604534'; // número comercial Guarulhos
 
-      let message = `*SOLICITAÃ‡ÃƒO DE ORÃ‡AMENTO - MARIDO DE ALUGUEL GUARULHOS*\n\n`;
+      let message = `*SOLICITAÇÃO DE ORÇAMENTO - MARIDO DE ALUGUEL GUARULHOS*\n\n`;
       message += `*Nome:* ${name}\n`;
       if (phone) message += `*Telefone:* ${phone}\n`;
       message += `*Bairro em Guarulhos:* ${neighborhood}\n`;
-      message += `*ServiÃ§o Desejado:* ${service}\n`;
-      if (details) message += `*ObservaÃ§Ãµes:* ${details}\n\n`;
-      message += `OlÃ¡! Gostaria de receber um orÃ§amento rÃ¡pido para este serviÃ§o.`;
+      message += `*Serviço Desejado:* ${service}\n`;
+      if (details) message += `*Observações:* ${details}\n\n`;
+      message += `Olá! Gostaria de receber um orçamento rápido para este serviço.`;
 
       const encodedMessage = encodeURIComponent(message);
       const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
@@ -143,82 +143,82 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const blogArticlesData = {
     '1': {
-      title: 'Como Instalar um Ventilador de Teto com SeguranÃ§a em Guarulhos',
-      category: 'ElÃ©trica & Conforto',
+      title: 'Como Instalar um Ventilador de Teto com Segurança em Guarulhos',
+      category: 'Elétrica & Conforto',
       date: '18 de Julho, 2026',
       content: `
-        <p>A instalaÃ§Ã£o de um ventilador de teto exige atenÃ§Ã£o especial Ã  fiaÃ§Ã£o elÃ©trica e Ã  fixaÃ§Ã£o no teto ou laje, garantindo que o aparelho funcione sem ruÃ­dos ou riscos de queda.</p>
+        <p>A instalação de um ventilador de teto exige atenção especial à fiação elétrica e à fixação no teto ou laje, garantindo que o aparelho funcione sem ruídos ou riscos de queda.</p>
         <h4>1. Verifique a Estrutura do Teto</h4>
-        <p>O ventilador deve ser fixado em uma caixa de luz reforÃ§ada de metal ou diretamente no concreto da laje. Tetos de gesso rebaixado exigem suporte prolongado ancorado no teto estrutural.</p>
-        <h4>2. Cheque a Voltagem e a FiaÃ§Ã£o</h4>
-        <p>Em Guarulhos, a voltagem padrÃ£o Ã© 110V/127V na maioria das residÃªncias, mas hÃ¡ instalaÃ§Ãµes em 220V. Ã‰ essencial identificar a fase, o neutro e o fio terra, alÃ©m de passar a fiaÃ§Ã£o do interruptor para controle de velocidade e luz.</p>
-        <h4>3. Balanceamento das PÃ¡s</h4>
-        <p>PÃ¡s desbalanceadas causam vibraÃ§Ãµes e desgaste precoce no motor. Certifique-se de que todas as pÃ¡s estejam com os parafusos firmemente apertados.</p>
-        <p><strong>Prefere nÃ£o arriscar?</strong> Nossos profissionais em Guarulhos fazem a instalaÃ§Ã£o rÃ¡pida e limpa em menos de 1 hora!</p>
+        <p>O ventilador deve ser fixado em uma caixa de luz reforçada de metal ou diretamente no concreto da laje. Tetos de gesso rebaixado exigem suporte prolongado ancorado no teto estrutural.</p>
+        <h4>2. Cheque a Voltagem e a Fiação</h4>
+        <p>Em Guarulhos, a voltagem padrão é 110V/127V na maioria das residências, mas há instalações em 220V. É essencial identificar a fase, o neutro e o fio terra, além de passar a fiação do interruptor para controle de velocidade e luz.</p>
+        <h4>3. Balanceamento das Pás</h4>
+        <p>Pás desbalanceadas causam vibrações e desgaste precoce no motor. Certifique-se de que todas as pás estejam com os parafusos firmemente apertados.</p>
+        <p><strong>Prefere não arriscar?</strong> Nossos profissionais em Guarulhos fazem a instalação rápida e limpa em menos de 1 hora!</p>
       `
     },
     '2': {
-      title: 'Quando Trocar a ResistÃªncia do Chuveiro elÃ©trico',
-      category: 'HidrÃ¡ulica & ElÃ©trica',
+      title: 'Quando Trocar a Resistência do Chuveiro elétrico',
+      category: 'Hidráulica & Elétrica',
       date: '10 de Julho, 2026',
       content: `
-        <p>O chuveiro queimou ou parou de esquentar? Esse Ã© um dos chamados mais frequentes que atendemos em apartamentos e casas em Guarulhos.</p>
-        <h4>Sinais de que a resistÃªncia queimou:</h4>
+        <p>O chuveiro queimou ou parou de esquentar? Esse é um dos chamados mais frequentes que atendemos em apartamentos e casas em Guarulhos.</p>
+        <h4>Sinais de que a resistência queimou:</h4>
         <ul>
-          <li>A Ã¡gua sai fria mesmo com o seletor na posiÃ§Ã£o "Inverno" ou "Quente".</li>
-          <li>VocÃª ouviu um pequeno estalo no chuveiro e a Ã¡gua esfriou imediatamente.</li>
-          <li>O disjuntor do chuveiro disparou no quadro elÃ©trico.</li>
+          <li>A água sai fria mesmo com o seletor na posição "Inverno" ou "Quente".</li>
+          <li>Você ouviu um pequeno estalo no chuveiro e a água esfriou imediatamente.</li>
+          <li>O disjuntor do chuveiro disparou no quadro elétrico.</li>
         </ul>
         <h4>Cuidados ao trocar:</h4>
-        <p>Desligue sempre o disjuntor geral ou o disjuntor do banheiro antes de manusear o chuveiro. ApÃ³s a troca da resistÃªncia, deixe correr Ã¡gua fria por alguns segundos antes de religar a energia para evitar queimar a nova peÃ§a a seco!</p>
+        <p>Desligue sempre o disjuntor geral ou o disjuntor do banheiro antes de manusear o chuveiro. Após a troca da resistência, deixe correr água fria por alguns segundos antes de religar a energia para evitar queimar a nova peça a seco!</p>
       `
     },
     '3': {
       title: 'Como Escolher o Suporte de TV Ideal para sua Parede',
-      category: 'InstalaÃ§Ãµes & TV',
+      category: 'Instalações & TV',
       date: '02 de Julho, 2026',
       content: `
-        <p>Fixar a TV na parede libera espaÃ§o no painel ou rack e deixa o ambiente muito mais moderno e elegante.</p>
+        <p>Fixar a TV na parede libera espaço no painel ou rack e deixa o ambiente muito mais moderno e elegante.</p>
         <h4>Tipos de Suportes:</h4>
         <ul>
-          <li><strong>Fixos:</strong> Ideais para salas e quartos onde a TV fica paralela Ã  parede. Baixo custo e ultra discreto.</li>
-          <li><strong>InclinÃ¡veis:</strong> Permitem ajustar o Ã¢ngulo vertical para eliminar reflexos de luz.</li>
-          <li><strong>Articulados:</strong> Perfeitos para ambientes integrados ou cantos, permitindo girar a TV para diferentes Ã¢ngulos.</li>
+          <li><strong>Fixos:</strong> Ideais para salas e quartos onde a TV fica paralela à parede. Baixo custo e ultra discreto.</li>
+          <li><strong>Inclináveis:</strong> Permitem ajustar o ângulo vertical para eliminar reflexos de luz.</li>
+          <li><strong>Articulados:</strong> Perfeitos para ambientes integrados ou cantos, permitindo girar a TV para diferentes ângulos.</li>
         </ul>
-        <h4>AtenÃ§Ã£o ao Tipo de Parede:</h4>
-        <p>Paredes de drywall necessitam de buchas especÃ­ficas para gesso (como a bucha Fly ou basculante). Em paredes de bloco estrutural ou tijolo baiano, as buchas convencionais de 8mm ou 10mm garantem sustentaÃ§Ã£o total.</p>
+        <h4>Atenção ao Tipo de Parede:</h4>
+        <p>Paredes de drywall necessitam de buchas específicas para gesso (como a bucha Fly ou basculante). Em paredes de bloco estrutural ou tijolo baiano, as buchas convencionais de 8mm ou 10mm garantem sustentação total.</p>
       `
     },
     '4': {
-      title: 'Quanto Custa Montar MÃ³veis em Guarulhos? Guia Completo',
-      category: 'Montagem de MÃ³veis',
+      title: 'Quanto Custa Montar Móveis em Guarulhos? Guia Completo',
+      category: 'Montagem de Móveis',
       date: '25 de Junho, 2026',
       content: `
-        <p>Comprou um guarda-roupa, mesa, rack ou armÃ¡rio de cozinha pela internet e precisa de montagem profissional em Guarulhos?</p>
-        <p>O valor da montagem varia conforme a complexidade, dimensÃ£o do mÃ³vel e quantidade de portas/gavetas. Em geral, pequenos mÃ³veis (como cÃ´modas e mesas de cabeceira) tÃªm valores super acessÃ­veis, enquanto guarda-roupas grandes de portas de correr exigem maior tempo de montagem e regulagem de portas.</p>
-        <p>Chame a nossa equipe no WhatsApp para enviar uma foto do manual ou do link do mÃ³vel e receba um orÃ§amento exato e sem compromisso!</p>
+        <p>Comprou um guarda-roupa, mesa, rack ou armário de cozinha pela internet e precisa de montagem profissional em Guarulhos?</p>
+        <p>O valor da montagem varia conforme a complexidade, dimensão do móvel e quantidade de portas/gavetas. Em geral, pequenos móveis (como cômodas e mesas de cabeceira) têm valores super acessíveis, enquanto guarda-roupas grandes de portas de correr exigem maior tempo de montagem e regulagem de portas.</p>
+        <p>Chame a nossa equipe no WhatsApp para enviar uma foto do manual ou do link do móvel e receba um orçamento exato e sem compromisso!</p>
       `
     },
     '5': {
       title: 'Pequenos Reparos que Evitam Grandes Problemas no Apartamento',
-      category: 'ManutenÃ§Ã£o Residencial',
+      category: 'Manutenção Residencial',
       date: '15 de Junho, 2026',
       content: `
-        <p>Ignorar pequenos vazamentos ou tomadas esquentando pode custar caro no futuro. Confira os reparos mais preventivos para condomÃ­nios:</p>
+        <p>Ignorar pequenos vazamentos ou tomadas esquentando pode custar caro no futuro. Confira os reparos mais preventivos para condomínios:</p>
         <ul>
-          <li><strong>Vazamentos em Torneiras e SifÃµes:</strong> Um gotejamento contÃ­nuo danifica armÃ¡rios de mdf e aumenta a conta de Ã¡gua do condomÃ­nio.</li>
-          <li><strong>Tomadas Frouxas ou Queimadas:</strong> Evita mal contato e curtos elÃ©tricos em eletrodomÃ©sticos caros.</li>
-          <li><strong>Silicone no Box do Banheiro:</strong> Previne infiltraÃ§Ãµes de Ã¡gua para o vizinho do andar de baixo.</li>
+          <li><strong>Vazamentos em Torneiras e Sifões:</strong> Um gotejamento contínuo danifica armários de mdf e aumenta a conta de água do condomínio.</li>
+          <li><strong>Tomadas Frouxas ou Queimadas:</strong> Evita mal contato e curtos elétricos em eletrodomésticos caros.</li>
+          <li><strong>Silicone no Box do Banheiro:</strong> Previne infiltrações de água para o vizinho do andar de baixo.</li>
         </ul>
       `
     },
     '6': {
-      title: 'Dicas de ManutenÃ§Ã£o Residencial Preventiva para Casas e CondomÃ­nios',
+      title: 'Dicas de Manutenção Residencial Preventiva para Casas e Condomínios',
       category: 'Dicas de Casa',
       date: '05 de Junho, 2026',
       content: `
-        <p>Manter a manutenÃ§Ã£o da sua residÃªncia em dia garante valorizaÃ§Ã£o do imÃ³vel, economia de energia e tranquilidade para sua famÃ­lia.</p>
-        <p>Crie um checklist semestral para inspecionar fechaduras, vedaÃ§Ã£o de janelas, limpeza de sifÃµes e teste de disjuntores DR. Conte com um Marido de Aluguel profissional em Guarulhos para cuidar de tudo para vocÃª com garantia!</p>
+        <p>Manter a manutenção da sua residência em dia garante valorização do imóvel, economia de energia e tranquilidade para sua família.</p>
+        <p>Crie um checklist semestral para inspecionar fechaduras, vedação de janelas, limpeza de sifões e teste de disjuntores DR. Conte com um Marido de Aluguel profissional em Guarulhos para cuidar de tudo para você com garantia!</p>
       `
     }
   };
