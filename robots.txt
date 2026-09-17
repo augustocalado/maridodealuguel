@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap oficial para indexação no Google Search Console e Bing Webmaster
-Sitemap: https://maridodealuguelemguarulhos.com.br/sitemap.xml
+Sitemap: https://www.maridodealuguelemguarulhos.com.br/sitemap.xml

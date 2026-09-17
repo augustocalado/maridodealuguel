@@ -71,7 +71,7 @@
         </div>
 
         <!-- Section: Dados da Empresa & Orçamentos -->
-        <div class="card">
+        <div class="card" style="margin-bottom:24px;">
           <div class="card-header">
             <div>
               <div class="card-title"><i class="fas fa-store"></i> Dados do Negócio nos Comprovantes</div>
@@ -87,7 +87,7 @@
                 <input type="text" class="form-control" id="cfg-empresa-nome" placeholder="Ex: Marido de Aluguel Profissional" required>
               </div>
               <div class="form-group">
-                <label class="form-label">WhatsApp de Contato</label>
+                <label class="form-label">WhatsApp de Contato (exibido nos comprovantes)</label>
                 <input type="text" class="form-control" id="cfg-empresa-whats" placeholder="Ex: (11) 99999-9999">
               </div>
             </div>
@@ -104,6 +104,53 @@
             <div style="margin-top: 18px; display:flex; justify-content:flex-end;">
               <button type="submit" class="btn btn-primary">
                 <i class="fas fa-floppy-disk"></i> Salvar Informações
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Section: Rastreamento WhatsApp -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title"><i class="fab fa-whatsapp" style="color:#25D366"></i> Rastreamento de Cliques (WhatsApp)</div>
+              <p style="font-size:12.5px;color:var(--text-muted);margin-top:4px;">
+                Configure o número para onde o link de rastreamento vai redirecionar. Coloque o link abaixo no Google Meu Negócio.
+              </p>
+            </div>
+          </div>
+          <form id="form-whatsapp" onsubmit="salvarConfigWhatsapp(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Número do WhatsApp (formato internacional, só números)</label>
+                <input type="text" class="form-control" id="cfg-wa-numero"
+                  placeholder="Ex: 5511977931818" maxlength="15"
+                  pattern="[0-9]+" title="Apenas números, com DDI e DDD. Ex: 5511977931818">
+                <span style="font-size:11.5px;color:var(--text-muted);margin-top:4px;display:block;">
+                  <i class="fas fa-circle-info"></i> DDI + DDD + Número, sem espaços ou traços. Ex: <code>5511977931818</code>
+                </span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Mensagem padrão ao abrir o WhatsApp</label>
+                <input type="text" class="form-control" id="cfg-wa-mensagem"
+                  placeholder="Ex: Olá! Vi vocês no Google e gostaria de um orçamento.">
+              </div>
+            </div>
+
+            <!-- Link gerado para o Google Meu Negócio -->
+            <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:18px;">
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;"><i class="fas fa-link"></i> Link para usar no Google Meu Negócio:</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <code id="wa-link-preview" style="font-size:12px;color:var(--accent);word-break:break-all;flex:1;">Preencha o número acima para gerar o link</code>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="copiarLinkWa()" id="btn-copiar-wa" style="white-space:nowrap;" disabled>
+                  <i class="fas fa-copy"></i> Copiar
+                </button>
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-floppy-disk"></i> Salvar Configuração
               </button>
             </div>
           </form>
@@ -415,6 +462,12 @@
       document.getElementById('cfg-empresa-whats').value = config.whatsapp || '(11) 97793-1818';
       document.getElementById('cfg-empresa-pix').value = config.pix || '';
       document.getElementById('cfg-empresa-cidade').value = config.cidade || 'Guarulhos e Região SP';
+
+      // Carregar config do WhatsApp de rastreamento
+      const waConfig = JSON.parse(localStorage.getItem('mda_whatsapp_config') || '{}');
+      document.getElementById('cfg-wa-numero').value = waConfig.numero || '';
+      document.getElementById('cfg-wa-mensagem').value = waConfig.mensagem || 'Olá! Vi vocês no Google e gostaria de solicitar um orçamento.';
+      atualizarLinkPreview();
     }
 
     function salvarConfigEmpresa(e) {
@@ -428,6 +481,53 @@
       localStorage.setItem('mda_empresa_config', JSON.stringify(config));
       showToast('Dados da empresa salvos com sucesso!', 'success');
     }
+
+    // ---- Configuração do WhatsApp de Rastreamento ----
+    function atualizarLinkPreview() {
+      const num = (document.getElementById('cfg-wa-numero').value || '').trim().replace(/\D/g,'');
+      const previewEl = document.getElementById('wa-link-preview');
+      const btnCopiar = document.getElementById('btn-copiar-wa');
+      if (num.length >= 10) {
+        const base = window.location.origin;
+        const link = `${base}/track.html?origem=google&midia=perfil_gmn`;
+        previewEl.textContent = link;
+        btnCopiar.disabled = false;
+      } else {
+        previewEl.textContent = 'Preencha o número acima para gerar o link';
+        btnCopiar.disabled = true;
+      }
+    }
+
+    function copiarLinkWa() {
+      const txt = document.getElementById('wa-link-preview').textContent;
+      navigator.clipboard.writeText(txt).then(() => {
+        showToast('Link copiado para a área de transferência!', 'success');
+      }).catch(() => {
+        showToast('Não foi possível copiar automaticamente', 'error');
+      });
+    }
+
+    function salvarConfigWhatsapp(e) {
+      e.preventDefault();
+      const numero = document.getElementById('cfg-wa-numero').value.trim().replace(/\D/g,'');
+      const mensagem = document.getElementById('cfg-wa-mensagem').value.trim();
+
+      if (numero.length < 10) {
+        showToast('Digite um número válido com DDI + DDD + número', 'error');
+        return;
+      }
+
+      const waConfig = { numero, mensagem };
+      localStorage.setItem('mda_whatsapp_config', JSON.stringify(waConfig));
+      atualizarLinkPreview();
+      showToast('Configuração do WhatsApp salva! ✅', 'success');
+    }
+
+    // Atualizar preview em tempo real ao digitar
+    document.addEventListener('DOMContentLoaded', () => {
+      const input = document.getElementById('cfg-wa-numero');
+      if (input) input.addEventListener('input', atualizarLinkPreview);
+    });
 
     function escapeHtml(text) {
       if (!text) return '';

@@ -70,6 +70,13 @@
               <div class="stat-label">Lucro Líquido (Mês)</div>
             </div>
           </div>
+          <div class="stat-card" style="--stat-color:#25D366;--stat-bg:rgba(37,211,102,0.08)">
+            <div class="stat-icon"><i class="fab fa-whatsapp"></i></div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-whatsapp">—</div>
+              <div class="stat-label">Cliques WhatsApp (mês)</div>
+            </div>
+          </div>
         </div>
 
         <!-- Grid: Recent + Quick Actions -->
@@ -187,6 +194,17 @@
       const lucro = aprovados.reduce((s, o) => s + (parseFloat(o.lucro_liquido) || 0), 0);
       document.getElementById('stat-faturamento').textContent = formatCurrency(faturamento);
       document.getElementById('stat-lucro').textContent = formatCurrency(lucro);
+
+      // WhatsApp click counter
+      try {
+        const { count: cWa } = await db
+          .from('whatsapp_clicks')
+          .select('*', { count: 'exact', head: true })
+          .gte('criado_em', monthStart);
+        document.getElementById('stat-whatsapp').textContent = cWa ?? 0;
+      } catch (e) {
+        document.getElementById('stat-whatsapp').textContent = '—';
+      }
 
       // Status Summary
       const statuses = ['rascunho','enviado','aprovado','executado','cancelado'];

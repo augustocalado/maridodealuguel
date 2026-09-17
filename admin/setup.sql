@@ -155,3 +155,27 @@ CREATE TABLE IF NOT EXISTS orcamento_checklists (
 
 ALTER TABLE orcamento_checklists ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Auth users only" ON orcamento_checklists FOR ALL USING (auth.role() = 'authenticated');
+
+-- =====================================================
+-- 10. Rastreamento de Cliques WhatsApp (Google Meu Negócio)
+-- =====================================================
+-- Esta tabela registra cada acesso à página /track.html
+-- Insira o link abaixo no "Google Meu Negócio" (Site / WhatsApp):
+--   https://SEU_DOMINIO/track.html?origem=google&midia=perfil_gmn
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS whatsapp_clicks (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  origem     text DEFAULT 'direto',   -- ex: google, instagram, indicacao
+  midia      text,                    -- ex: perfil_gmn, stories, bio
+  campanha   text,                    -- ex: promo-julho, reformas
+  referrer   text,                    -- URL de origem do navegador
+  user_agent text,                    -- Informação do dispositivo
+  criado_em  timestamptz DEFAULT now()
+);
+
+-- Apenas admins leem; qualquer visitante pode inserir (sem auth)
+ALTER TABLE whatsapp_clicks ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public insert" ON whatsapp_clicks FOR INSERT WITH CHECK (true);
+CREATE POLICY "Admins read"  ON whatsapp_clicks FOR SELECT USING (auth.role() = 'authenticated');
+

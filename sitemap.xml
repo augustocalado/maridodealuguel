@@ -3,273 +3,197 @@
 
   <!-- Página Principal -->
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <!-- Páginas de Serviços Principais -->
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/eletricista.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/eletricista.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/encanador.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/encanador.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/marceneiro.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/marceneiro.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/pedreiro.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/pedreiro.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/pintor.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/pintor.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <!-- Páginas de Serviços Específicos -->
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/instalacao-chuveiro.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/instalacao-chuveiro.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/montagem-moveis.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/montagem-moveis.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/fixacao-tv.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/fixacao-tv.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/instalacao-ventilador.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/instalacao-ventilador.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/troca-torneira.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/troca-torneira.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/instalacao-luminaria.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/instalacao-luminaria.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/instalacao-cortinas.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/instalacao-cortinas.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/troca-fechaduras.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/troca-fechaduras.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/instalacao-varal.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/instalacao-varal.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/reparos-hidraulicos.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/reparos-hidraulicos.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <!-- Páginas de Bairros de Guarulhos -->
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/centro.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/centro.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/vila-galvao.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/vila-galvao.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/vila-augusta.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/vila-augusta.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/picango.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/picango.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/bonsucesso.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/bonsucesso.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/cumbica.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/cumbica.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/taboao.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/taboao.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/cocaia.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/cocaia.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/jardim-maia.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/jardim-maia.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/macedo.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/macedo.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/ponte-grande.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/ponte-grande.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/jardim-presidente-dutra.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/jardim-presidente-dutra.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/parque-cecap.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/parque-cecap.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/gopouva.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/gopouva.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/vila-rio.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/vila-rio.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/vila-endres.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/vila-endres.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/cidade-serodio.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/cidade-serodio.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/bosque-maia.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/bosque-maia.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <!-- Páginas de Cidades Vizinhas (raio 20km) -->
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/mairipora.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.80</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/mairipora.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/aruja.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.80</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/aruja.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/itaquaquecetuba.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.80</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/itaquaquecetuba.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
   <url>
-    <loc>https://maridodealuguelemguarulhos.com.br/sao-paulo-zona-norte.html</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.80</priority>
+    <loc>https://www.maridodealuguelemguarulhos.com.br/sao-paulo-zona-norte.html</loc>
+    <lastmod>2026-09-16</lastmod>
   </url>
 
 </urlset>
