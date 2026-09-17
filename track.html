@@ -70,11 +70,13 @@
       const NUMERO   = waConfig.numero   || '5511999999999';
       const MENSAGEM = waConfig.mensagem || 'Ola! Gostaria de solicitar um orcamento.';
 
-      // ── Params da URL ──
+      // ── Params da URL (origem/midia/campanha + conteudo/termo) ──
       const params   = new URLSearchParams(window.location.search);
-      const origem   = params.get('origem')   || 'direto';
-      const midia    = params.get('midia')    || null;
-      const campanha = params.get('campanha') || null;
+      const origem   = params.get('origem')   || params.get('utm_source')   || 'direto';
+      const midia    = params.get('midia')    || params.get('utm_medium')   || null;
+      const campanha = params.get('campanha') || params.get('utm_campaign') || null;
+      const conteudo = params.get('conteudo') || params.get('utm_content')  || null;
+      const termo    = params.get('termo')    || params.get('utm_term')     || null;
 
       // ── URL do WhatsApp ──
       const encodedMsg  = encodeURIComponent(MENSAGEM);
@@ -89,13 +91,25 @@
       // ── Registrar clique no Supabase ──
       try {
         const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        await client.from('whatsapp_clicks').insert({
+        const base = {
           origem,
           midia,
           campanha,
           referrer:   document.referrer || null,
           user_agent: navigator.userAgent,
-        });
+        };
+        const insert = (payload) =>
+          client.from('whatsapp_clicks').insert(payload).then((res) => (res && res.error) || null);
+
+        // Tenta gravar conteudo/termo; se as colunas ainda nao existirem,
+        // refaz o insert apenas com as colunas originais (nao perde o registro).
+        let error = await insert(Object.assign({}, base, { conteudo, termo }));
+        if (error && (conteudo || termo)) {
+          error = await insert(base);
+        }
+        if (error) {
+          console.warn('Tracking skipped:', error.message || error);
+        }
       } catch (e) {
         console.warn('Tracking skipped:', e);
       }

@@ -179,3 +179,8 @@ ALTER TABLE whatsapp_clicks ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public insert" ON whatsapp_clicks FOR INSERT WITH CHECK (true);
 CREATE POLICY "Admins read"  ON whatsapp_clicks FOR SELECT USING (auth.role() = 'authenticated');
 
+-- Colunas extras para UTMs (utm_content / utm_term).
+-- Rodar uma vez no SQL Editor do Supabase para guardar conteudo/termo das campanhas.
+ALTER TABLE whatsapp_clicks ADD COLUMN IF NOT EXISTS conteudo text;
+ALTER TABLE whatsapp_clicks ADD COLUMN IF NOT EXISTS termo    text;
+

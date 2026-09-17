@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Harness - Analytics</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        #results { margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Test Harness - Analytics</h1>
+    <div id="results"></div>
+
+    <script src="analytics.js"></script>
+    <script>
+        let passed = 0;
+        let failed = 0;
+        const resDiv = document.getElementById('results');
+
+        function assert(name, condition) {
+            const p = document.createElement('p');
+            if (condition) {
+                passed++;
+                p.className = 'pass';
+                p.innerText = '✅ PASS: ' + name;
+            } else {
+                failed++;
+                p.className = 'fail';
+                p.innerText = '❌ FAIL: ' + name;
+                console.error('Assertion failed:', name);
+            }
+            resDiv.appendChild(p);
+        }
+
+        setTimeout(() => {
+            if (!window.MDA_TRACKING) {
+                assert('MDA_TRACKING was injected', false);
+                return;
+            }
+            assert('MDA_TRACKING is available', true);
+
+            // Test 1: UTM extraction
+            const searchStr = '?utm_source=google&midia=cpc&utm_content=banner1';
+            const utms = window.MDA_TRACKING.readUTMsFromSearch(searchStr);
+            assert('UTM Source extracted', utms.utm_source === 'google');
+            assert('UTM Medium extracted from midia', utms.utm_medium === 'cpc');
+            assert('UTM Content extracted', utms.utm_content === 'banner1');
+
+            // Test 2: Build Track URL
+            const trackUrl = window.MDA_TRACKING.buildTrackURL(utms);
+            assert('Track URL built correctly', trackUrl.includes('origem=google') && trackUrl.includes('midia=cpc') && trackUrl.includes('conteudo=banner1'));
+
+            // Test 3: WhatsApp URL
+            const waUrl = window.MDA_TRACKING.buildWhatsAppURL('Ola', utms);
+            assert('WA URL includes number', waUrl.includes('wa.me/5511980604534'));
+            assert('WA URL includes UTMs in text', waUrl.includes('origem%3A%20google') && waUrl.includes('conteudo%3A%20banner1'));
+
+            const summary = document.createElement('h3');
+            summary.innerText = `Total: ${passed} passed, ${failed} failed`;
+            resDiv.appendChild(summary);
+            
+            console.log(`PASSED: ${passed}  FAILED: ${failed}`);
+        }, 100);
+    </script>
+</body>
+</html>

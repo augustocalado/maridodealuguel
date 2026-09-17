@@ -2,6 +2,17 @@
    MARIDO DE ALUGUEL EM GUARULHOS - JAVASCRIPT LOGIC
    ========================================================================== */
 
+// 0. Analytics (GA4 + eventos + UTMs) - carregamento unico, sem duplicar tags.
+//    Todo o rastreamento fica em analytics.js (configure o GA4_ID la).
+(function loadAnalytics() {
+  if (window.__mdaAnalyticsLoader) return;
+  window.__mdaAnalyticsLoader = true;
+  var script = document.createElement('script');
+  script.src = 'analytics.js';
+  script.async = true;
+  document.head.appendChild(script);
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Mobile Menu Toggle
   const mobileToggle = document.getElementById('mobileMenuToggle');
